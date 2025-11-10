@@ -1,10 +1,4 @@
-dataset: continuous_outcomes
-templates:
-  afa2c607-d7f9-4b06-bdce-2e97d0a8127e: !Template
-    id: afa2c607-d7f9-4b06-bdce-2e97d0a8127e
     prompt: |+ 
-      Article: {{abstract_and_results}}
-
       Based on the given trial article, what is the table of mean outcome and standard deviation in YAML format for the following Intervention, Comparator, and Outcome?
       Intervention: {{intervention}}
       Comparator: {{comparator}}
@@ -25,4 +19,3 @@ templates:
       If there are numerical data for pre and post-intervention, choose the post-intervention data. If there are multiple timeframes for the outcome, choose the one closest to the outcome timepoint of interest or the very last one.
 
       YAML:
-    name: yaml
