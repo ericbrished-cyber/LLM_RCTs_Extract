@@ -1,0 +1,132 @@
+#run_ico_extraction.py
+import os
+import textwrap
+import langextract as lx
+import google.generativeai as genai
+
+# 0) Configure API key from env (bash: export GOOGLE_API_KEY="sk-..."; powershell: $env:GOOGLE_API_KEY="sk-...")
+genai.configure(api_key=os.environ["AIzaSyCCTKHniLvrkV50tAAKwPamiXN_oH_qbvg"])
+
+
+prompt = textwrap.dedent("""\
+Extract ALL pairwise ICO results comparing two arms from the input text. Return ONLY a single YAML list.
+Each item must match EXACTLY one of the two schemas below.
+
+# Continuous outcome
+- outcome: <text>
+  type: continuous
+  timepoint: <text|X>
+  intervention:
+    arm: <text>
+    mean: <float|X>
+    standard_deviation: <float|X>
+    group_size: <int|X>
+  comparator:
+    arm: <text>
+    mean: <float|X>
+    standard_deviation: <float|X>
+    group_size: <int|X>
+  incomplete: <true|false>
+
+# Binary outcome
+- outcome: <text>
+  type: binary
+  timepoint: <text|X>
+  intervention:
+    arm: <text>
+    events: <int|X>
+    group_size: <int|X>
+  comparator:
+    arm: <text>
+    events: <int|X>
+    group_size: <int|X>
+  incomplete: <true|false>
+
+Rules:
+- Output only the YAML list. No prose, no code, no comments.
+- Arm names must be verbatim when identifiable.
+- For continuous values, parse patterns like "a±b", "mean (SD b)", or "a (b)" where b is clearly SD. Ignore SE.
+- For binary outcomes, parse 'x/y (%)' as events=x and group_size=y.
+- If any numeric value is unknown, write "X" in that field.
+- Set 'incomplete: true' if any required numeric is "X"; otherwise false.
+""")
+
+ex_cont = lx.data.ExampleData(
+    text=(
+        "Mean body weight gain: WGJ +50.6 g vs WA -0.7 g (n=30 per arm). "
+        "Duration of illness (h): AJ 49.4 ± 32.6, WGJ 47.5 ± 38.9, WA 26.5 ± 27.4 (n=30/arm). "
+        "Fecal losses (g/kg/h): AJ 3.94 ± 2.35, WGJ 3.59 ± 2.35, WA 2.19 ± 1.63 (n=30/arm)."
+    ),
+    extractions=[
+        lx.data.Extraction(
+            extraction_class="ico_continuous",
+            extraction_text="mean body weight gain, unspecified time",
+            attributes={
+                "outcome": "Body weight gain (g)",
+                "type": "continuous",
+                "timepoint": "X",
+                "intervention": {"arm": "WGJ", "mean": 50.6, "standard_deviation": "X", "group_size": 30},
+                "comparator":   {"arm": "WA",  "mean": -0.7, "standard_deviation": "X", "group_size": 30},
+                "incomplete": True
+            }
+        ),
+        lx.data.Extraction(
+            extraction_class="ico_continuous",
+            extraction_text="duration of illness (h), unspecified time",
+            attributes={
+                "outcome": "Duration of illness (h)",
+                "type": "continuous",
+                "timepoint": "X",
+                "intervention": {"arm": "WGJ", "mean": 47.5, "standard_deviation": 38.9, "group_size": 30},
+                "comparator":   {"arm": "WA",  "mean": 26.5, "standard_deviation": 27.4, "group_size": 30},
+                "incomplete": False
+            }
+        ),
+        lx.data.Extraction(
+            extraction_class="ico_continuous",
+            extraction_text="fecal losses (g/kg/h), unspecified time",
+            attributes={
+                "outcome": "Fecal losses (g/kg/h)",
+                "type": "continuous",
+                "timepoint": "X",
+                "intervention": {"arm": "WGJ", "mean": 3.59, "standard_deviation": 2.35, "group_size": 30},
+                "comparator":   {"arm": "WA",  "mean": 2.19, "standard_deviation": 1.63, "group_size": 30},
+                "incomplete": False
+            }
+        ),
+    ]
+)
+
+ex_bin = lx.data.ExampleData(
+    text=("Adults with ureteropelvic junction obstruction underwent pyeloplasty with or without internal stenting. "
+          "At one month, DTPA scans were performed. Partial obstruction occurred in 8 of 20 patients "
+          "in the internal drainage group and in 13 of 44 stentless cases."),
+    extractions=[
+        lx.data.Extraction(
+            extraction_class="ico_binary",
+            extraction_text="partial obstruction at 1 month",
+            attributes={
+                "outcome": "Partial obstruction",
+                "type": "binary",
+                "timepoint": "1 month",
+                "intervention": {"arm": "internal drainage group", "events": 8,  "group_size": 20},
+                "comparator":   {"arm": "stentless cases",     "events": 13, "group_size": 44},
+                "incomplete": False
+            }
+        )
+    ]
+)
+
+
+task = lx.tasks.ExtractionTask(
+    prompt=prompt,
+    examples=[ex_cont, ex_bin],
+    candidate_classes=["ico_continuous", "ico_binary"]
+)
+
+#chunk
+chunk_text = """
+"""
+
+yaml_text = lx.run(task, text=chunk_text, model_id="gemini-2.5-flash")
+print(yaml_text)
