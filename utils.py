@@ -47,7 +47,7 @@ def get_xml(entry, xml_folder_path="data/XML"):
 
 def get_fewshotexamples(entry, few_shots_folder="few-shots"):
     """
-    Generates few-shot examples based on the entry's outcome type.
+    Fetches stored few-shot examples based on the entry's outcome type.
 
     Args:
         entry (dict): The entry containing the outcome type.

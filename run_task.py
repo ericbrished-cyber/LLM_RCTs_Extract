@@ -1,24 +1,26 @@
 import langextract as lx
 from utils import get_prompt, get_fulltext, get_fewshotexamples, simplified_entry, get_xml
 import json
+import os
 
-def run_task(model):
+def run_task(model = "gemini-2.5-flash"):
     #load JSON file
     with open('gold-standard/annotated_rct_dataset.json', 'r') as file:
         annotations = json.load(file)
 
+    output = []
     for entry in annotations:
-        #only keep, relevant data: id of ICO, PMCID, I, C, O and binary/continuous type
-        simpl_entry = simplified_entry(entry)
+        #only keep relevant information: id of unique ICO, PMCID, Intervention, Comparator, Outcome and binary/continuous type
+        simple_entry = simplified_entry(entry)
 
         # 1. Define the prompt and extraction rules
-        prompt = get_prompt(simpl_entry)
+        prompt = get_prompt(simple_entry)
+        
+        # The input text to be processed
+        input_text = get_xml(simple_entry)
 
         # 2. Provide a high-quality example to guide the model
-        # The input text to be processed
-        input_text = get_xml(simpl_entry)
-
-        examples = get_fewshotexamples(simpl_entry)
+        examples = get_fewshotexamples(simple_entry)
 
         # Run the extraction
         result = lx.extract(
@@ -28,3 +30,6 @@ def run_task(model):
             model_id=model,
         )
 
+        print(result)
+
+run_task(model="gemini-2.5-flash")
