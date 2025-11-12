@@ -1,0 +1,14 @@
+examples:
+  - text: "Patient was given 250 mg IV Cefazolin TID for one week."
+    extractions:
+    - extraction_class: "dosage"
+      extraction_text: "250 mg"
+    - extraction_class: "route"
+      extraction_text: "IV"
+    - extraction_class: "medication"
+      extraction_text: "Cefazolin"
+    - extraction_class: "frequency"
+      extraction_text: "TID"
+    - extraction_class: "duration"
+      extraction_text: "for one week"
+      

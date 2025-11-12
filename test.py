@@ -1,15 +1,16 @@
 import json
+import langextract as lx
 
-from utils import simplified_entry, get_xml, pdf_to_markdown
+from utils import get_prompt, get_fulltext, get_fewshotexamples, simplified_entry, get_xml
 
+with open('gold-standard/annotated_rct_dataset_test.json', 'r') as file:
+        annotations = json.load(file)
+        
+for entry in annotations:
+        #print(entry)
+        simple_entry = simplified_entry(entry)
+       # print(get_prompt(simple_entry))
+        #print(get_xml(simple_entry))
+        print(get_fewshotexamples(simple_entry))
 
-pdf_to_markdown()
-
-
-
-with open('gold-standard/annotated_rct_dataset.json', 'r') as file:
-        ICOs = json.load(file)
-for entry in ICOs:
-    simpl = simplified_entry(entry)
-
-
+html_content = lx.visualize("extraction_results.jsonl")
