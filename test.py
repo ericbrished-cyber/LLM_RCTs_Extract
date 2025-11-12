@@ -1,16 +1,16 @@
 import json
 import langextract as lx
 
-from utils import get_prompt, get_fulltext, get_fewshotexamples, simplified_entry, get_xml
+import json
 
-with open('gold-standard/annotated_rct_dataset_test.json', 'r') as file:
-        annotations = json.load(file)
-        
-for entry in annotations:
-        #print(entry)
-        simple_entry = simplified_entry(entry)
-       # print(get_prompt(simple_entry))
-        #print(get_xml(simple_entry))
-        print(get_fewshotexamples(simple_entry))
+with open('gold-standard/annotated_rct_dataset.json', 'r') as f:
+    annotations = json.load(f)
 
-html_content = lx.visualize("extraction_results.jsonl")
+
+pmcid = 5459356
+dict = {}
+for entry in annotations:               
+   if entry["pmcid"] == 5459456:
+       dict = {entry["id"]: [entry["intervention"], entry["comparator"], entry["outcome"]]}
+print(dict)
+

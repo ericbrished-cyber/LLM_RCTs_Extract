@@ -44,7 +44,6 @@ def run_task(model = "gemini-2.5-flash"):
         )
 
         lx.io.save_annotated_documents([result], output_name="extraction_results.jsonl", output_dir=".")
-        print(result)
    
-run_task(model = "gpt-5-mini")
+run_task(model="gpt-5-mini")
 

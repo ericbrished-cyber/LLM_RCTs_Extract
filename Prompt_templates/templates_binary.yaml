@@ -1,18 +1,23 @@
 prompt: |+ 
 You are an information extraction system.
 
-Extract from the trial article statistical information associated with each ICO triplet defined below:
+Extract from the trial article the counts for:
 - Intervention: {{intervention}}
-- Comparator: {{comparator}}
-- Outcome: {{outcome}}
+- Comparator:  {{comparator}}
+- Outcome:     {{outcome}}
 
-Produce your answer as a single JSON object :
-1: Extract groupsize for the intervention arm
+Return ONLY a JSON object with this exact structure (no extra text):
 
-2: Extract groupsize for the comparator arm
+{
+  "extractions": [
+    {
+      "extraction_class": "binary_stats",
+      "extraction_text": "{\"intervention_group_size\": NUMBER_OR_x, \"comparator_group_size\": NUMBER_OR_x, \"intervention_events\": NUMBER_OR_x, \"comparator_events\": NUMBER_OR_x}"
+    }
+  ]
+}
 
-3: Extract event counts for the intervention arm 
-
-4: Extract event counts for the comparator arm
-
-5: Return ONLY the JSON object above. Do not add any other text.
+Rules:
+- The first character of your entire response must be { and the last must be }.
+- Replace NUMBER_OR_x with integers, or "x" if unavailable.
+- Do not add fields, prose, code fences, or explanations.

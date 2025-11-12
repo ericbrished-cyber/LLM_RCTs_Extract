@@ -1,14 +1,12 @@
 examples:
-  - text: "Patient was given 250 mg IV Cefazolin TID for one week."
+  - text: "Mean body weight gain: WGJ +50.6 g vs WA -0.7 g (n=30 per arm). Duration of illness (h): AJ 49.4 ± 32.6, WGJ 47.5 ± 38.9, WA 26.5 ± 27.4 (n=30/arm). Fecal losses (g/kg/h): AJ 3.94 ± 2.35, WGJ 3.59 ± 2.35, WA 2.19 ± 1.63 (n=30/arm)."
     extractions:
-    - extraction_class: "dosage"
-      extraction_text: "250 mg"
-    - extraction_class: "route"
-      extraction_text: "IV"
-    - extraction_class: "medication"
-      extraction_text: "Cefazolin"
-    - extraction_class: "frequency"
-      extraction_text: "TID"
-    - extraction_class: "duration"
-      extraction_text: "for one week"
-      
+    - extraction_class: "intervention_group_size"
+      extraction_text: "30"
+    - extraction_class: "intervention_mean"
+      extraction_text: "50.6"
+    - extraction_class: "comparator_group_size"
+      extraction_text: "30"
+    - extraction_class: "comparator_mean"
+      extraction_text: "-0.7"
+
