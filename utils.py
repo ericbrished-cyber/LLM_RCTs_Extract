@@ -2,8 +2,41 @@ import json
 import os
 import pdfplumber
 import yaml
+from pathlib import Path
+import re
 
-def get_prompt(entry):
+with open('gold-standard/annotated_rct_dataset.json', 'r') as file:
+        annotations = json.load(file)
+
+
+PMCID_RE = re.compile(r'(?:PMCID)?(\d{6,8})', re.IGNORECASE)
+
+def list_pmcids(pdf_folder: str) -> list[str]:
+    pmcids = []
+    seen = set()
+    for pdf_path in Path(pdf_folder).glob("*.pdf"):
+        # try to pull a numeric PMCID from the filename (with or without PMCID prefix)
+        m = PMCID_RE.search(pdf_path.stem)
+        if not m:
+            continue
+        pmcid = m.group(1)
+        if pmcid not in seen:
+            seen.add(pmcid)
+            pmcids.append(int(pmcid))
+    return pmcids
+
+def get_icos(pmcid):
+    result = {
+        e["id"]: [e["intervention"], e["comparator"], e["outcome"]]
+        for e in annotations
+        if e.get("pmcid") == pmcid
+        }
+    return result
+
+
+def get_prompt(pmcid):
+    ICOs = get_icos(pmcid)
+
     # Logic to generate the prompt based on the entry
     if entry["outcome_type"] == "binary":
         with open('prompt_templates/templates_binary.yaml', 'r') as binary_template_file:
@@ -17,7 +50,6 @@ def get_prompt(entry):
         return continuous_template.replace("{{intervention}}", entry["intervention"]) \
                                   .replace("{{comparator}}", entry["comparator"]) \
                                   .replace("{{outcome}}", entry["outcome"])
-
 
 
 
@@ -49,7 +81,8 @@ import os
 import yaml
 import langextract as lx
 
-def get_fewshotexamples(entry, few_shots_folder="few-shots"):
+##FIXA SÅ KLARAR ATTRIBUTES OCKSÅ
+def get_fewshotexamples(pmcid, few_shots_folder="few-shots"):
     yaml_file = os.path.join(
         few_shots_folder,
         "binary_examples.yaml" if entry.get("outcome_type") == "binary" else "continuous_examples.yaml"
@@ -67,6 +100,7 @@ def get_fewshotexamples(entry, few_shots_folder="few-shots"):
             )
             for it in ex.get("extractions", [])
         ]
+
         examples.append(lx.data.ExampleData(text=ex["text"], extractions=extractions))
 
     return examples
@@ -82,3 +116,5 @@ def simplified_entry(entry):
         "outcome_type": entry["outcome_type"]
     }
     return simplified_entry
+
+

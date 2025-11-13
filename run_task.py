@@ -1,4 +1,4 @@
-from utils import get_prompt, get_fulltext, get_fewshotexamples, simplified_entry, get_xml
+from utils import get_prompt, get_fewshotexamples, get_xml, list_pmcids, get_icos
 
 import json
 import os
@@ -11,26 +11,26 @@ from dotenv import load_dotenv, find_dotenv
 # Load .env early
 load_dotenv(find_dotenv())
 
-# Now your key is available via os.getenv
 API_KEY = os.getenv("LANGEXTRACT_API_KEY")
 
-def run_task(model = "gemini-2.5-flash"):
-    #load JSON file
-    with open('gold-standard/annotated_rct_dataset_test.json', 'r') as file:
-        annotations = json.load(file)
+pdf_folder = "data/PDF_test"
+output_folder = "./outputs"
 
-    for entry in annotations:
-        #only keep relevant information: id of unique ICO, PMCID, Intervention, Comparator, Outcome and binary/continuous type
-        simple_entry = simplified_entry(entry)
+
+pmcid_lst = list_pmcids(pdf_folder)
+
+def run_task(model = "gemini-2.5-flash"):
+
+    for pmcid in pmcid_lst:
 
         # 1. Define the prompt and extraction rules
-        prompt = get_prompt(simple_entry)
+        prompt = get_prompt(pmcid)
         
         # The input text to be processed
-        input_text = get_xml(simple_entry)
+        input_text = get_xml(pmcid)
 
         # 2. Provide a high-quality example to guide the model
-        examples = get_fewshotexamples(simple_entry)
+        examples = get_fewshotexamples(pmcid)
 
         # Run the extraction
         result = lx.extract(
@@ -43,7 +43,7 @@ def run_task(model = "gemini-2.5-flash"):
             use_schema_constraints=False,
         )
 
-        lx.io.save_annotated_documents([result], output_name="extraction_results.jsonl", output_dir=".")
+        lx.io.save_annotated_documents([result], output_name="extraction_results.jsonl", output_dir=output_folder)
    
-run_task(model="gpt-5-mini")
+
 
