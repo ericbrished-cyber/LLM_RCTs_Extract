@@ -4,6 +4,7 @@ import pdfplumber
 import yaml
 from pathlib import Path
 import re
+import langextract as lx
 
 with open('gold-standard/annotated_rct_dataset.json', 'r') as file:
         annotations = json.load(file)
@@ -34,6 +35,11 @@ def get_icos(pmcid):
     return result
 
 
+def get_prompt_static():
+    path = Path("prompt_templates/static_prompt.md")
+    text = path.read_text(encoding="utf-8")
+    return text
+
 def get_prompt(pmcid):
     ICOs = get_icos(pmcid)
 
@@ -53,22 +59,11 @@ def get_prompt(pmcid):
 
 
 
-def get_fulltext(entry, text_folder_path="data/TXT"):
-    pmcid = entry["pmcid"]
+#def get_fulltext(pmcid, text_folder_path="data/TXT"):
 
 
-def get_xml(entry, xml_folder_path="data/XML"):
-    """
-    Retrieves the XML content for the given PMCID.
 
-    Args:
-        entry (dict): The entry containing the PMCID.
-        xml_folder_path (str): Path to the folder containing XML files.
-
-    Returns:
-        str: The content of the XML file if found, or an error message.
-    """
-    pmcid = entry["pmcid"]
+def get_xml(pmcid, xml_folder_path="data/XML"):
     xml_file_path = os.path.join(xml_folder_path, f"PMC{pmcid}.xml")
 
     if os.path.exists(xml_file_path):
@@ -77,9 +72,6 @@ def get_xml(entry, xml_folder_path="data/XML"):
     else:
         return f"XML file for PMCID {pmcid} not found in {xml_folder_path}."
 
-import os
-import yaml
-import langextract as lx
 
 ##FIXA SÅ KLARAR ATTRIBUTES OCKSÅ
 def get_fewshotexamples(pmcid, few_shots_folder="few-shots"):

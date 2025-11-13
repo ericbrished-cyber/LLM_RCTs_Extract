@@ -1,4 +1,4 @@
-from utils import get_prompt, get_fewshotexamples, get_xml, list_pmcids, get_icos
+from utils import get_prompt, get_fewshotexamples, get_xml, list_pmcids, get_icos, get_prompt_static
 
 import json
 import os
@@ -24,8 +24,7 @@ def run_task(model = "gemini-2.5-flash"):
     for pmcid in pmcid_lst:
 
         # 1. Define the prompt and extraction rules
-        prompt = get_prompt(pmcid)
-        
+        prompt = get_prompt_static()
         # The input text to be processed
         input_text = get_xml(pmcid)
 
@@ -47,3 +46,4 @@ def run_task(model = "gemini-2.5-flash"):
    
 
 
+run_task(model="gpt-5-mini")
