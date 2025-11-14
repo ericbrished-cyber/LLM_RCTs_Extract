@@ -3,5 +3,11 @@ You are extracting study data. Output **JSON only** following the schema. Captur
 
 ## What to extract
 - All distinct **(Intervention, Comparator, Outcome)** combinations.
-- **Continuous outcomes:** `n`, `mean`, `sd` per arm.
-- **Binary outcomes:** `n`, `events` per arm.
+
+- For each such unique ICO extract:
+    If outcome is continuous
+        - **Continuous outcomes:** `n`, `mean`, `sd` per arm.
+    If outcome is binary
+        - **Binary outcomes:** `n`, `events` per arm.
+
+Extract nothing more. ONLY THESE VALUES.
