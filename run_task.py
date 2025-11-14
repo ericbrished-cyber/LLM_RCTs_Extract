@@ -55,7 +55,6 @@ def run_task(model="gemini-2.5-flash"):
                     prompt_description=prompt,
                     examples=examples,
                     model_id=model,
-                    api_key=os.environ.get("OPENAI_API_KEY"),
                     fence_output=True,
                     use_schema_constraints=False,
                 )
@@ -73,9 +72,10 @@ def run_task(model="gemini-2.5-flash"):
         except Exception as e:
             print(f"\n[{i}/{total}] PMCID={pmcid} ✗ failed: {e}", flush=True)
 
-# Run with your chosen model
+# Run with your chosen model    
+
 #run_task(model="gpt-5-mini")
 
 
 
-visualize(5459456, output_dir=output_folder)
+visualize(5771543, output_dir=output_folder)
