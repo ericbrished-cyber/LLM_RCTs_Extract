@@ -118,6 +118,7 @@ ex_bin = lx.data.ExampleData(
 )
 
 
+
 task = lx.tasks.ExtractionTask(
     prompt=prompt,
     examples=[ex_cont, ex_bin],
