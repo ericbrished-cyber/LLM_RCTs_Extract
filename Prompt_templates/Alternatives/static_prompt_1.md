@@ -6,31 +6,9 @@ You are extracting numerical statistical results from a randomized controlled tr
 
 
 ## What to annotate
-For each of the following (ICO-triplets):
-    Intervention: 10-week yoga program
-    Comparator: Control
-    Outcome:LF:HF component of HRV
+- Find all distinct **(Intervention, Comparator, Outcome)** combinations (ICO-triplets). Make sure to not be too fine-grained. Try to grasp the general setup of the study and its ICO triplets and not associate every new way of reporting on what was done with a new ICO triplet.
 
-    Intervention: 10-week yoga program
-    Comparator: Control
-    Outcome:Push-up test
-
-    Intervention: 10-week yoga program
-    Comparator: Control
-    Outcome:Quality of life - PCS (SF36)
-
-    Intervention: 10-week yoga program
-    Comparator: Control
-    Outcome:Quality of life - MCS (SF36)
-
-    Intervention: 10-week yoga program
-    Comparator: Control
-    Outcome:NN50
-
-    Intervention: 10-week yoga program
-    Comparator: Control
-    Outcome:Flexibility
-
+ONLY ANNOTATE THESE THINGS:
 - For each such unique ICO-triplet annotate:
         For the type of outcome (binary/continuous):
         - **Continuous outcomes:** group_size_intervention, group_size_comparator, mean_intervention, mean_comparator, sd_intervention and sd_comparator.

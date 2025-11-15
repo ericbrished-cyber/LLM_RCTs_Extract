@@ -73,32 +73,6 @@ def get_xml(pmcid, xml_folder_path="data/XML"):
     else:
         return f"XML file for PMCID {pmcid} not found in {xml_folder_path}."
 
-
-# ##FIXA SÅ KLARAR ATTRIBUTES OCKSÅ
-# def get_fewshotexamples(pmcid, few_shots_folder="few-shots"):
-#     yaml_file = os.path.join(
-#         few_shots_folder,
-#         "binary_examples.yaml" if entry.get("outcome_type") == "binary" else "continuous_examples.yaml"
-#     )
-
-#     with open(yaml_file, "r", encoding="utf-8") as f:
-#         data = yaml.safe_load(f) or {}
-
-#     examples = []
-#     for ex in data.get("examples", []):
-#         extractions = [
-#             lx.data.Extraction(
-#                 extraction_class=it["extraction_class"],
-#                 extraction_text=it["extraction_text"]
-#             )
-#             for it in ex.get("extractions", [])
-#         ]
-
-#         examples.append(lx.data.ExampleData(text=ex["text"], extractions=extractions))
-
-#     return examples
-
-
 def get_fewshotexamples_static(few_shots_folder="few-shots"):
     yaml_file = os.path.join(
         few_shots_folder, "examples.yaml")
