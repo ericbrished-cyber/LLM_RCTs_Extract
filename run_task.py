@@ -1,5 +1,5 @@
 import sys, time, threading, os
-from utils import get_xml, list_pmcids, get_icos, get_prompt_static, get_fewshotexamples_static, visualize
+from utils import get_xml, list_pmcids, get_icos, get_prompt_static, get_fewshotexamples_static, visualize, get_fulltext
 import json
 import langextract as lx
 from dotenv import load_dotenv, find_dotenv
@@ -8,8 +8,12 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 pdf_folder = "data/PDF_test"
+markdown_folder = "data/Markdown"
 output_folder = "./outputs"
+
 os.makedirs(output_folder, exist_ok=True)
+os.makedirs(pdf_folder, exist_ok=True)
+os.makedirs(markdown_folder, exist_ok=True)
 
 pmcid_lst = list_pmcids(pdf_folder)
 
@@ -39,13 +43,23 @@ class Spinner:
             self._t.join()
 
 def run_task(model="gemini-2.5-flash"):
+    # Convert PDFs to markdown before processing
+    md_output_dir = markdown_folder
+    print(f"Converting PDFs to markdown...", flush=True)
+    from pdf_converter import convert_pdf_folder
+    conversions = convert_pdf_folder(pdf_folder, md_output_dir)
+    print(f"✓ Converted {len(conversions)} PDFs to markdown\n", flush=True)
+    
+    total = len(pmcid_lst)
+    print(f"Found {total} PDFs. Output → {os.path.abspath(output_folder)}", flush=True)
+
     total = len(pmcid_lst)
     print(f"Found {total} PDFs. Output → {os.path.abspath(output_folder)}", flush=True)
 
     for i, pmcid in enumerate(pmcid_lst, 1):
         label = f"[{i}/{total}] PMCID={pmcid} extracting…"
         prompt = get_prompt_static()
-        input_text = get_xml(pmcid)
+        input_text = get_fulltext(pmcid)
         examples = get_fewshotexamples_static()
 
         try:

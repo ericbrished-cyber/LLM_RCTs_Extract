@@ -10,7 +10,6 @@ import glob
 with open('gold-standard/annotated_rct_dataset.json', 'r') as file:
         annotations = json.load(file)
 
-
 PMCID_RE = re.compile(r'(?:PMCID)?(\d{6,8})', re.IGNORECASE)
 
 def list_pmcids(pdf_folder: str) -> list[str]:
@@ -60,7 +59,7 @@ def get_prompt_static():
 
 
 
-#def get_fulltext(pmcid, text_folder_path="data/TXT"):
+def get_fulltext(pmcid, text_folder_path="data/Markdown"):
 
 
 
