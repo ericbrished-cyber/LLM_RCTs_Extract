@@ -31,7 +31,6 @@ def convert_pdf_to_markdown(pdf_path, output_dir="data/Markdown"):
             str(pdf_path),
             page_chunks=False,  # Don't split into page chunks
             write_images=False,  # Don't extract images
-            table_strategy="lines_strict"  # Use strict line detection for tables
         )
         
         # Write to file
@@ -69,7 +68,7 @@ def convert_pdf_folder(pdf_folder, output_dir="data/Markdown"):
 # Example usage
 if __name__ == "__main__":
     # Test conversion
-    pdf_folder = "data/PDF"
+    pdf_folder = "data/PDF_test"
     output_dir = "data/Markdown"
     
     print(f"Converting PDFs from {pdf_folder} to {output_dir}")

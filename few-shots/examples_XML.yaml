@@ -1,0 +1,183 @@
+examples:
+- text: |
+    <table-wrap position="float" id="T3" orientation="portrait">
+      <label>Table 3</label>
+      <caption><p>Summary of primary and secondary outcome measures</p></caption>
+      <table frame="hsides" rules="groups" border="1">
+        <thead valign="top">
+          <tr>
+            <th align="left" valign="bottom">&#160;<hr/></th>
+            <th colspan="2" align="center" valign="bottom"><bold>Yoga group</bold><hr/></th>
+            <th colspan="2" align="center" valign="bottom"><bold>Control group</bold><hr/></th>
+            <th align="center" valign="top"><bold>Effect size</bold></th>
+            <th align="center" valign="top"><bold>p</bold><sup><bold>*</bold></sup></th>
+          </tr>
+          <tr>
+            <th align="left"><bold>Outcome measure</bold></th>
+            <th align="center"><bold>Week 0</bold></th>
+            <th align="center"><bold>Week 11</bold></th>
+            <th align="center"><bold>Week 0</bold></th>
+            <th align="center"><bold>Week 11</bold></th>
+          </tr>
+        </thead>
+        <tbody valign="top">
+          <tr>
+            <td><bold><italic toggle="yes">HRV and Heart Rate</italic></bold><hr/></td>
+          </tr>
+          <tr>
+            <td>&#8195;Log HF Power<hr/></td>
+            <td align="center">2.75&#8201;&#177;&#8201;0.63<hr/></td>   <!-- Yoga, Week 0 -->
+            <td align="center">2.51&#8201;&#177;&#8201;0.83<hr/></td>   <!-- Yoga, Week 11 -->
+            <td align="center">2.57&#8201;&#177;&#8201;0.58<hr/></td>   <!-- Control, Week 0 -->
+            <td align="center">2.53&#8201;&#177;&#8201;0.55<hr/></td>   <!-- Control, Week 11 -->
+            <td align="center">0.02<hr/></td>
+            <td align="center">0.48<hr/></td>
+          </tr>
+          <tr>
+            <td>&#8195;pNN50<hr/></td>
+            <td align="center">27.7&#8201;&#177;&#8201;27.5<hr/></td>   <!-- Yoga, Week 0 -->
+            <td align="center">20.7&#8201;&#177;&#8201;25.3<hr/></td>   <!-- Yoga, Week 11 -->
+            <td align="center">16.0&#8201;&#177;&#8201;16.6<hr/></td>   <!-- Control, Week 0 -->
+            <td align="center">19.4&#8201;&#177;&#8201;18.4<hr/></td>   <!-- Control, Week 11 -->
+            <td align="center">0.12<hr/></td>
+            <td align="center">0.04<hr/></td>
+          </tr>
+          <tr>
+            <td><bold><italic toggle="yes">Musculoskeletal Fitness</italic></bold><hr/></td>
+          </tr>
+          <tr>
+            <td>&#8195;Sit and reach (cm)<hr/></td>
+            <td align="center">27.8&#8201;&#177;&#8201;10.0<hr/></td>   <!-- Yoga, Week 0 -->
+            <td align="center">31.0&#8201;&#177;&#8201;8.7<hr/></td>    <!-- Yoga, Week 11 -->
+            <td align="center">27.3&#8201;&#177;&#8201;11.0<hr/></td>   <!-- Control, Week 0 -->
+            <td align="center">26.4&#8201;&#177;&#8201;10.4<hr/></td>   <!-- Control, Week 11 -->
+            <td align="center">0.35<hr/></td>
+            <td align="center">&lt;0.001<hr/></td>
+          </tr>
+        </tbody>
+      </table>
+    </table-wrap>
+
+  extractions:
+  # ---------- Log HF Power ----------
+  - extraction_class: "arm_continuous"
+    extraction_text: "2.75 ± 0.63"
+    attributes:
+      Outcome: "Log HF Power"
+      Timepoint: "Week 0"
+      ArmLabel: "Yoga group"
+      ArmRole: "intervention"
+      Mean: "2.75"
+      SD: "0.63"
+
+  - extraction_class: "arm_continuous"
+    extraction_text: "2.51 ± 0.83"
+    attributes:
+      Outcome: "Log HF Power"
+      Timepoint: "Week 11"
+      ArmLabel: "Yoga group"
+      ArmRole: "intervention"
+      Mean: "2.51"
+      SD: "0.83"
+
+  - extraction_class: "arm_continuous"
+    extraction_text: "2.57 ± 0.58"
+    attributes:
+      Outcome: "Log HF Power"
+      Timepoint: "Week 0"
+      ArmLabel: "Control group"
+      ArmRole: "comparator"
+      Mean: "2.57"
+      SD: "0.58"
+
+  - extraction_class: "arm_continuous"
+    extraction_text: "2.53 ± 0.55"
+    attributes:
+      Outcome: "Log HF Power"
+      Timepoint: "Week 11"
+      ArmLabel: "Control group"
+      ArmRole: "comparator"
+      Mean: "2.53"
+      SD: "0.55"
+
+  # ---------- pNN50 ----------
+  - extraction_class: "arm_continuous"
+    extraction_text: "27.7 ± 27.5"
+    attributes:
+      Outcome: "pNN50"
+      Timepoint: "Week 0"
+      ArmLabel: "Yoga group"
+      ArmRole: "intervention"
+      Mean: "27.7"
+      SD: "27.5"
+
+  - extraction_class: "arm_continuous"
+    extraction_text: "20.7 ± 25.3"
+    attributes:
+      Outcome: "pNN50"
+      Timepoint: "Week 11"
+      ArmLabel: "Yoga group"
+      ArmRole: "intervention"
+      Mean: "20.7"
+      SD: "25.3"
+
+  - extraction_class: "arm_continuous"
+    extraction_text: "16.0 ± 16.6"
+    attributes:
+      Outcome: "pNN50"
+      Timepoint: "Week 0"
+      ArmLabel: "Control group"
+      ArmRole: "comparator"
+      Mean: "16.0"
+      SD: "16.6"
+
+  - extraction_class: "arm_continuous"
+    extraction_text: "19.4 ± 18.4"
+    attributes:
+      Outcome: "pNN50"
+      Timepoint: "Week 11"
+      ArmLabel: "Control group"
+      ArmRole: "comparator"
+      Mean: "19.4"
+      SD: "18.4"
+
+  # ---------- Sit and reach (cm) ----------
+  - extraction_class: "arm_continuous"
+    extraction_text: "27.8 ± 10.0"
+    attributes:
+      Outcome: "Sit and reach (cm)"
+      Timepoint: "Week 0"
+      ArmLabel: "Yoga group"
+      ArmRole: "intervention"
+      Mean: "27.8"
+      SD: "10.0"
+
+  - extraction_class: "arm_continuous"
+    extraction_text: "31.0 ± 8.7"
+    attributes:
+      Outcome: "Sit and reach (cm)"
+      Timepoint: "Week 11"
+      ArmLabel: "Yoga group"
+      ArmRole: "intervention"
+      Mean: "31.0"
+      SD: "8.7"
+
+  - extraction_class: "arm_continuous"
+    extraction_text: "27.3 ± 11.0"
+    attributes:
+      Outcome: "Sit and reach (cm)"
+      Timepoint: "Week 0"
+      ArmLabel: "Control group"
+      ArmRole: "comparator"
+      Mean: "27.3"
+      SD: "11.0"
+
+  - extraction_class: "arm_continuous"
+    extraction_text: "26.4 ± 10.4"
+    attributes:
+      Outcome: "Sit and reach (cm)"
+      Timepoint: "Week 11"
+      ArmLabel: "Control group"
+      ArmRole: "comparator"
+      Mean: "26.4"
+      SD: "10.4"
