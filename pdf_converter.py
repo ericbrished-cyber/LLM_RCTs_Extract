@@ -1,11 +1,11 @@
 import os
-import pdfplumber
 from pathlib import Path
+import pymupdf4llm
 
 
-def convert_pdf_to_markdown(pdf_path, output_dir="data/MD"):
+def convert_pdf_to_markdown(pdf_path, output_dir="data/Markdown"):
     """
-    Convert a PDF to Markdown format, preserving tables.
+    Convert a PDF to Markdown using pymupdf4llm for superior layout analysis.
     
     Args:
         pdf_path (str or Path): Path to the PDF file
@@ -26,30 +26,17 @@ def convert_pdf_to_markdown(pdf_path, output_dir="data/MD"):
         return str(md_path)
     
     try:
-        markdown_content = []
-        
-        with pdfplumber.open(pdf_path) as pdf:
-            for page_num, page in enumerate(pdf.pages, 1):
-                # Add page header
-                markdown_content.append(f"\n---\n## Page {page_num}\n")
-                
-                # Extract text
-                text = page.extract_text()
-                if text:
-                    markdown_content.append(text)
-                
-                # Extract tables
-                tables = page.extract_tables()
-                if tables:
-                    for table_num, table in enumerate(tables, 1):
-                        markdown_content.append(f"\n### Table {table_num}\n")
-                        # Convert table to markdown format
-                        md_table = table_to_markdown(table)
-                        markdown_content.append(md_table)
+        # Use pymupdf4llm with table formatting options
+        markdown_text = pymupdf4llm.to_markdown(
+            str(pdf_path),
+            page_chunks=False,  # Don't split into page chunks
+            write_images=False,  # Don't extract images
+            table_strategy="lines_strict"  # Use strict line detection for tables
+        )
         
         # Write to file
         with open(md_path, "w", encoding="utf-8") as f:
-            f.write("\n".join(markdown_content))
+            f.write(markdown_text)
         
         return str(md_path)
     
@@ -58,49 +45,7 @@ def convert_pdf_to_markdown(pdf_path, output_dir="data/MD"):
         return None
 
 
-def table_to_markdown(table):
-    """
-    Convert a table (list of lists) to markdown format.
-    
-    Args:
-        table (list): List of rows, where each row is a list of cells
-    
-    Returns:
-        str: Markdown formatted table
-    """
-    if not table or len(table) == 0:
-        return ""
-    
-    # Clean cells (replace None with empty string)
-    cleaned_table = [[str(cell) if cell is not None else "" for cell in row] for row in table]
-    
-    # Ensure all rows have the same number of columns
-    max_cols = max(len(row) for row in cleaned_table)
-    cleaned_table = [row + [""] * (max_cols - len(row)) for row in cleaned_table]
-    
-    if len(cleaned_table) < 1:
-        return ""
-    
-    # Build markdown table
-    md_lines = []
-    
-    # Header row
-    header = "| " + " | ".join(cleaned_table[0]) + " |"
-    md_lines.append(header)
-    
-    # Separator
-    separator = "| " + " | ".join(["---"] * max_cols) + " |"
-    md_lines.append(separator)
-    
-    # Data rows
-    for row in cleaned_table[1:]:
-        row_md = "| " + " | ".join(row) + " |"
-        md_lines.append(row_md)
-    
-    return "\n".join(md_lines)
-
-
-def convert_pdf_folder(pdf_folder, output_dir="data/MD"):
+def convert_pdf_folder(pdf_folder, output_dir="data/Markdown"):
     """
     Convert all PDFs in a folder to markdown, skipping already converted files.
     
@@ -121,12 +66,11 @@ def convert_pdf_folder(pdf_folder, output_dir="data/MD"):
     
     return conversions
 
-
-# Example usage for integration with run_task.py
+# Example usage
 if __name__ == "__main__":
     # Test conversion
-    pdf_folder = "data/PDF_test"
-    output_dir = "data/MD"
+    pdf_folder = "data/PDF"
+    output_dir = "data/Markdown"
     
     print(f"Converting PDFs from {pdf_folder} to {output_dir}")
     conversions = convert_pdf_folder(pdf_folder, output_dir)

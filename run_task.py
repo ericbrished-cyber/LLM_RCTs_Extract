@@ -53,9 +53,6 @@ def run_task(model="gemini-2.5-flash"):
     total = len(pmcid_lst)
     print(f"Found {total} PDFs. Output → {os.path.abspath(output_folder)}", flush=True)
 
-    total = len(pmcid_lst)
-    print(f"Found {total} PDFs. Output → {os.path.abspath(output_folder)}", flush=True)
-
     for i, pmcid in enumerate(pmcid_lst, 1):
         label = f"[{i}/{total}] PMCID={pmcid} extracting…"
         prompt = get_prompt_static()

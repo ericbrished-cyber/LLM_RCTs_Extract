@@ -60,6 +60,24 @@ def get_prompt_static():
 
 
 def get_fulltext(pmcid, text_folder_path="data/Markdown"):
+    """
+    Get the markdown content for a given PMCID.
+    
+    Args:
+        pmcid (int or str): The PMCID to retrieve
+        text_folder_path (str): Path to the folder containing markdown files
+    
+    Returns:
+        str: Content of the markdown file, or error message if not found
+    """
+    md_file_path = os.path.join(text_folder_path, f"{pmcid}.md")
+    
+    if os.path.exists(md_file_path):
+        with open(md_file_path, "r", encoding="utf-8") as md_file:
+            return md_file.read()
+    else:
+        return f"Markdown file for PMCID {pmcid} not found in {text_folder_path}."
+
 
 
 
