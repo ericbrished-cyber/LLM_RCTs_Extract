@@ -1,9 +1,0 @@
-examples:
-  - text: "Number of subjects reporting adverse events after having received macitentan (n=6 per dose) or placebo (n=14)"
-    extractions:
-    - extraction_class: "intervention_events"
-      extraction_text: "6"
-    - extraction_class: "comparator_events"
-      extraction_text: "14"
-
-    

@@ -1,8 +1,0 @@
-- text: "Patient takes Aspirin 100mg daily for heart health and Simvastatin 20mg at bedtime."
-  extractions:
-    - extraction_class: "mean"
-      extraction_text: "0.8"
-      attributes:
-        Intervention: "40"
-        Comparator: "0.8"
-        Outcome: "2"

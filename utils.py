@@ -4,6 +4,8 @@ import pdfplumber
 import yaml
 from pathlib import Path
 import re
+import langextract as lx
+import glob
 
 with open('gold-standard/annotated_rct_dataset.json', 'r') as file:
         annotations = json.load(file)
@@ -34,41 +36,35 @@ def get_icos(pmcid):
     return result
 
 
-def get_prompt(pmcid):
-    ICOs = get_icos(pmcid)
+def get_prompt_static():
+    path = Path("prompt_templates/static_prompt.md")
+    text = path.read_text(encoding="utf-8")
+    return text
 
-    # Logic to generate the prompt based on the entry
-    if entry["outcome_type"] == "binary":
-        with open('prompt_templates/templates_binary.yaml', 'r') as binary_template_file:
-            binary_template = binary_template_file.read()
-        return binary_template.replace("{{intervention}}", entry["intervention"]) \
-                              .replace("{{comparator}}", entry["comparator"]) \
-                              .replace("{{outcome}}", entry["outcome"])
-    else:
-        with open('prompt_templates/templates_continuous.yaml', 'r') as continuous_template_file:
-            continuous_template = continuous_template_file.read()
-        return continuous_template.replace("{{intervention}}", entry["intervention"]) \
-                                  .replace("{{comparator}}", entry["comparator"]) \
-                                  .replace("{{outcome}}", entry["outcome"])
+# def get_prompt(pmcid):
+#     ICOs = get_icos(pmcid)
+
+#     # Logic to generate the prompt based on the entry
+#     if entry["outcome_type"] == "binary":
+#         with open('prompt_templates/templates_binary.yaml', 'r') as binary_template_file:
+#             binary_template = binary_template_file.read()
+#         return binary_template.replace("{{intervention}}", entry["intervention"]) \
+#                               .replace("{{comparator}}", entry["comparator"]) \
+#                               .replace("{{outcome}}", entry["outcome"])
+#     else:
+#         with open('prompt_templates/templates_continuous.yaml', 'r') as continuous_template_file:
+#             continuous_template = continuous_template_file.read()
+#         return continuous_template.replace("{{intervention}}", entry["intervention"]) \
+#                                   .replace("{{comparator}}", entry["comparator"]) \
+#                                   .replace("{{outcome}}", entry["outcome"])
 
 
 
-def get_fulltext(entry, text_folder_path="data/TXT"):
-    pmcid = entry["pmcid"]
+#def get_fulltext(pmcid, text_folder_path="data/TXT"):
 
 
-def get_xml(entry, xml_folder_path="data/XML"):
-    """
-    Retrieves the XML content for the given PMCID.
 
-    Args:
-        entry (dict): The entry containing the PMCID.
-        xml_folder_path (str): Path to the folder containing XML files.
-
-    Returns:
-        str: The content of the XML file if found, or an error message.
-    """
-    pmcid = entry["pmcid"]
+def get_xml(pmcid, xml_folder_path="data/XML"):
     xml_file_path = os.path.join(xml_folder_path, f"PMC{pmcid}.xml")
 
     if os.path.exists(xml_file_path):
@@ -77,17 +73,36 @@ def get_xml(entry, xml_folder_path="data/XML"):
     else:
         return f"XML file for PMCID {pmcid} not found in {xml_folder_path}."
 
-import os
-import yaml
-import langextract as lx
 
-##FIXA SÅ KLARAR ATTRIBUTES OCKSÅ
-def get_fewshotexamples(pmcid, few_shots_folder="few-shots"):
+# ##FIXA SÅ KLARAR ATTRIBUTES OCKSÅ
+# def get_fewshotexamples(pmcid, few_shots_folder="few-shots"):
+#     yaml_file = os.path.join(
+#         few_shots_folder,
+#         "binary_examples.yaml" if entry.get("outcome_type") == "binary" else "continuous_examples.yaml"
+#     )
+
+#     with open(yaml_file, "r", encoding="utf-8") as f:
+#         data = yaml.safe_load(f) or {}
+
+#     examples = []
+#     for ex in data.get("examples", []):
+#         extractions = [
+#             lx.data.Extraction(
+#                 extraction_class=it["extraction_class"],
+#                 extraction_text=it["extraction_text"]
+#             )
+#             for it in ex.get("extractions", [])
+#         ]
+
+#         examples.append(lx.data.ExampleData(text=ex["text"], extractions=extractions))
+
+#     return examples
+
+
+def get_fewshotexamples_static(few_shots_folder="few-shots"):
     yaml_file = os.path.join(
-        few_shots_folder,
-        "binary_examples.yaml" if entry.get("outcome_type") == "binary" else "continuous_examples.yaml"
-    )
-
+        few_shots_folder, "examples.yaml")
+    
     with open(yaml_file, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f) or {}
 
@@ -96,15 +111,13 @@ def get_fewshotexamples(pmcid, few_shots_folder="few-shots"):
         extractions = [
             lx.data.Extraction(
                 extraction_class=it["extraction_class"],
-                extraction_text=it["extraction_text"]
+                extraction_text=it["extraction_text"],
+                attributes=it["attributes"]
             )
             for it in ex.get("extractions", [])
         ]
-
         examples.append(lx.data.ExampleData(text=ex["text"], extractions=extractions))
-
     return examples
-
 
 def simplified_entry(entry):
     simplified_entry = {
@@ -118,3 +131,21 @@ def simplified_entry(entry):
     return simplified_entry
 
 
+def visualize(pmcid, output_dir):
+    # 1) expected path
+    path = os.path.join(output_dir, f"{pmcid}.jsonl")
+
+    # 2) if not found, try to find a close match (e.g., multiple runs or suffixes)
+    if not os.path.exists(path):
+        matches = sorted(glob.glob(os.path.join(output_dir, f"*{pmcid}*.jsonl")))
+        if not matches:
+            raise FileNotFoundError(f"No JSONL for PMCID={pmcid} in {output_dir}")
+        path = matches[-1]  # pick the latest by name
+
+    # 3) visualize and write HTML
+    html = lx.visualize(path)
+    out_html = os.path.join(output_dir, f"visualization_{pmcid}.html")
+    with open(out_html, "w", encoding="utf-8") as f:
+        f.write(getattr(html, "data", html))  # handle Jupyter objects or plain str
+
+    print(f"✔ Visualization written to: {os.path.abspath(out_html)}")
