@@ -194,9 +194,9 @@ if __name__ == "__main__":
     # run_task(model="gpt-5-mini", source_type="pdf", extraction_mode="all")
     
     # Extract specific ICOs from XML
-    run_task(model="gpt-5-mini", source_type="xml", extraction_mode="guided")
+    #run_task(model="gpt-5-mini", source_type="xml", extraction_mode="guided")
     
     # Extract specific ICOs from PDF
-    #run_task(model="gpt-5-mini", source_type="pdf", extraction_mode="guided")
+            run_task(model="gpt-5-mini", source_type="pdf", extraction_mode="guided")
     
     pass
