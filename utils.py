@@ -10,7 +10,6 @@ import glob
 with open('gold-standard/annotated_rct_dataset.json', 'r') as file:
         annotations = json.load(file)
 
-
 PMCID_RE = re.compile(r'(?:PMCID)?(\d{6,8})', re.IGNORECASE)
 
 def list_pmcids(pdf_folder: str) -> list[str]:
@@ -60,7 +59,25 @@ def get_prompt_static():
 
 
 
-#def get_fulltext(pmcid, text_folder_path="data/TXT"):
+def get_fulltext(pmcid, text_folder_path="data/Markdown"):
+    """
+    Get the markdown content for a given PMCID.
+    
+    Args:
+        pmcid (int or str): The PMCID to retrieve
+        text_folder_path (str): Path to the folder containing markdown files
+    
+    Returns:
+        str: Content of the markdown file, or error message if not found
+    """
+    md_file_path = os.path.join(text_folder_path, f"{pmcid}.md")
+    
+    if os.path.exists(md_file_path):
+        with open(md_file_path, "r", encoding="utf-8") as md_file:
+            return md_file.read()
+    else:
+        return f"Markdown file for PMCID {pmcid} not found in {text_folder_path}."
+
 
 
 
@@ -73,39 +90,14 @@ def get_xml(pmcid, xml_folder_path="data/XML"):
     else:
         return f"XML file for PMCID {pmcid} not found in {xml_folder_path}."
 
-
-# ##FIXA SÅ KLARAR ATTRIBUTES OCKSÅ
-# def get_fewshotexamples(pmcid, few_shots_folder="few-shots"):
-#     yaml_file = os.path.join(
-#         few_shots_folder,
-#         "binary_examples.yaml" if entry.get("outcome_type") == "binary" else "continuous_examples.yaml"
-#     )
-
-#     with open(yaml_file, "r", encoding="utf-8") as f:
-#         data = yaml.safe_load(f) or {}
-
-#     examples = []
-#     for ex in data.get("examples", []):
-#         extractions = [
-#             lx.data.Extraction(
-#                 extraction_class=it["extraction_class"],
-#                 extraction_text=it["extraction_text"]
-#             )
-#             for it in ex.get("extractions", [])
-#         ]
-
-#         examples.append(lx.data.ExampleData(text=ex["text"], extractions=extractions))
-
-#     return examples
-
-
-def get_fewshotexamples_static(few_shots_folder="few-shots"):
-    yaml_file = os.path.join(
-        few_shots_folder, "examples.yaml")
+def get_fewshotexamples_static(few_shots_folder="few-shots", xml=False):
+    # Select the appropriate YAML file based on the xml flag
+    yaml_filename = "examples_XML.yaml" if xml else "examples.yaml"
+    yaml_file = os.path.join(few_shots_folder, yaml_filename)
     
     with open(yaml_file, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f) or {}
-
+    
     examples = []
     for ex in data.get("examples", []):
         extractions = [
@@ -117,6 +109,7 @@ def get_fewshotexamples_static(few_shots_folder="few-shots"):
             for it in ex.get("extractions", [])
         ]
         examples.append(lx.data.ExampleData(text=ex["text"], extractions=extractions))
+    
     return examples
 
 def simplified_entry(entry):
@@ -132,6 +125,8 @@ def simplified_entry(entry):
 
 
 def visualize(pmcid, output_dir):
+    """HTML-visualization of the Langextract output"""
+
     # 1) expected path
     path = os.path.join(output_dir, f"{pmcid}.jsonl")
 
@@ -149,3 +144,6 @@ def visualize(pmcid, output_dir):
         f.write(getattr(html, "data", html))  # handle Jupyter objects or plain str
 
     print(f"✔ Visualization written to: {os.path.abspath(out_html)}")
+
+
+visualize(output_dir="./outputs", pmcid=4357072)

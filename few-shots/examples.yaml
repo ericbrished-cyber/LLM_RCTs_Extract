@@ -1,142 +1,92 @@
 examples:
-  - text: "Mean body weight gain: WGJ +50.6 g vs WA -0.7 g (n=30 per arm).
-          Duration of illness (h): AJ 49.4 ± 32.6, WGJ 47.5 ± 38.9, WA 26.5 ± 27.4 (n=30/arm).
-          Fecal losses (g/kg/h): AJ 3.94 ± 2.35, WGJ 3.59 ± 2.35, WA 2.19 ± 1.63 (n=30/arm)."
-    extractions:
-      - extraction_class: "intervention_mean"
-        extraction_text: "+50.6 g"
-        attributes:
-          Intervention: "WGJ"
-          Comparator: "WA"
-          Outcome: "Mean body weight gain"
+- text: "Mean body weight gain: WGJ +50.6 g vs WA -0.7 g (n=30 per arm). Duration of illness (h): AJ 49.4 ± 32.6, WGJ 47.5 ± 38.9, WA 26.5 ± 27.4 (n=30/arm). Fecal losses (g/kg/h): AJ 3.94 ± 2.35, WGJ 3.59 ± 2.35, WA 2.19 ± 1.63 (n=30/arm)."
+  extractions:
+  - extraction_class: "arm_continuous"
+    extraction_text: "WGJ +50.6 g"
+    attributes:
+      ArmRole: "intervention"
+      ArmLabel: "WGJ"
+      Outcome: "Mean body weight gain"
+      Mean: "50.6"
+      N: "30"
 
-      - extraction_class: "intervention_n"
-        extraction_text: "n=30 per arm"
-        attributes:
-          Intervention: "WGJ"
-          Comparator: "WA"
-          Outcome: "Mean body weight gain"
+  - extraction_class: "arm_continuous"
+    extraction_text: "WA -0.7 g (n=30 per arm)"
+    attributes:
+      ArmRole: "comparator"
+      ArmLabel: "WA"
+      Outcome: "Mean body weight gain"
+      Mean: "-0.7"
+      N: "30"
 
-      - extraction_class: "comparator_mean"
-        extraction_text: "-0.7 g"
-        attributes:
-          Intervention: "WGJ"
-          Comparator: "WA"
-          Outcome: "Mean body weight gain"
+  - extraction_class: "arm_continuous"
+    extraction_text: "WGJ 47.5 ± 38.9"
+    attributes:
+      ArmRole: "intervention"
+      ArmLabel: "WGJ"
+      Outcome: "Duration of illness (h)"
+      Mean: "47.5"
+      SD: "38.9"
+      N: "30"
 
-      - extraction_class: "comparator_n"
-        extraction_text: "n=30 per arm"
-        attributes:
-          Intervention: "WGJ"
-          Comparator: "WA"
-          Outcome: "Mean body weight gain"
+  - extraction_class: "arm_continuous"
+    extraction_text: "WA 26.5 ± 27.4 (n=30/arm)"
+    attributes:
+      ArmRole: "comparator"
+      ArmLabel: "WA"
+      Outcome: "Duration of illness (h)"
+      Mean: "26.5"
+      SD: "27.4"
+      N: "30"
 
-      - extraction_class: "intervention_mean"
-        extraction_text: "47.5"
-        attributes:
-          Intervention: "WGJ"
-          Comparator: "WA"
-          Outcome: "Duration of illness (h)"
+  - extraction_class: "arm_continuous"
+    extraction_text: "WGJ 3.59 ± 2.35"
+    attributes:
+      ArmRole: "intervention"
+      ArmLabel: "WGJ"
+      Outcome: "Fecal losses"
+      Mean: "3.59"
+      SD: "2.35"
+      N: "30"
 
-      - extraction_class: "intervention_n"
-        extraction_text: "(n=30/arm)"
-        attributes:
-          Intervention: "WGJ"
-          Comparator: "WA"
-          Outcome: "Duration of illness (h)"
+  - extraction_class: "arm_continuous"
+    extraction_text: "WA 2.19 ± 1.63 (n=30/arm)"
+    attributes:
+      ArmRole: "comparator"
+      ArmLabel: "WA"
+      Outcome: "Fecal losses"
+      Mean: "2.19"
+      SD: "1.63"
+      N: "30"
 
-      - extraction_class: "comparator_mean"
-        extraction_text: "26.5"
-        attributes:
-          Intervention: "WGJ"
-          Comparator: "WA"
-          Outcome: "Duration of illness (h)"
+- text: "A total of 220/339 (64.9%) patients experienced AEs during the on-therapy period (desvenlafaxine, 69/115 [60.0%]; fluoxetine, 72/112 [64.3%]; and placebo, 79/112 [70.5%])."
+  extractions:
+  - extraction_class: "arm_binary"
+    extraction_text: "desvenlafaxine, 69/115 [60.0%]"
+    attributes:
+      ArmRole: "intervention"
+      ArmLabel: "desvenlafaxine"
+      Outcome: "Treatment-emergent adverse events (TEAEs)"
+      Events: "69"
+      GroupSize: "115"
+      Percent: "60.0"
 
-      - extraction_class: "comparator_n"
-        extraction_text: "(n=30/arm)"
-        attributes:
-          Intervention: "WGJ"
-          Comparator: "WA"
-          Outcome: "Duration of illness (h)"
-          
-      - extraction_class: "intervention_mean"
-        extraction_text: "3.59"
-        attributes:
-          Intervention: "WGJ"
-          Comparator: "WA"
-          Outcome: "Fecal losses"
+  - extraction_class: "arm_binary"
+    extraction_text: "fluoxetine, 72/112 [64.3%]"
+    attributes:
+      ArmRole: "intervention"
+      ArmLabel: "fluoxetine"
+      Outcome: "Treatment-emergent adverse events (TEAEs)"
+      Events: "72"
+      GroupSize: "112"
+      Percent: "64.3"
 
-      - extraction_class: "intervention_n"
-        extraction_text: "(n=30/arm)"
-        attributes:
-          Intervention: "WGJ"
-          Comparator: "WA"
-          Outcome: "Fecal losses"
-
-      - extraction_class: "comparator_mean"
-        extraction_text: "2.19"
-        attributes:
-          Intervention: "WGJ"
-          Comparator: "WA"
-          Outcome: "Fecal losses"
-
-      - extraction_class: "comparator_n"
-        extraction_text: "(n=30/arm)"
-        attributes:
-          Intervention: "WGJ"
-          Comparator: "WA"
-          Outcome: "Fecal losses"
-    
-  - text: A total of 220/339 (64.9%) patients experienced AEs during the on-therapy period
-         (desvenlafaxine, 69/115 [60.0%]; fluoxetine, 72/112 [64.3%]; and placebo, 79/112 [70.5%]).
-    extractions:
-      - extraction_class: "intervention_events"
-        extraction_text: "desvenlafaxine, 69/115 [60.0%]"
-        attributes:
-          Intervention: "desvenlafaxine"
-          Comparator: "placebo"
-          Outcome: "Treatment-emergent adverse events (TEAEs)"
-
-      - extraction_class: "comparator_events"
-        extraction_text: "and placebo, 79/112 [70.5%])"
-        attributes:
-          Intervention: "desvenlafaxine"
-          Comparator: "placebo"
-          Outcome: "Treatment-emergent adverse events (TEAEs)"
-      
-      - extraction_class: "intervention_events"
-        extraction_text: "fluoxetine, 72/112 [64.3%]"
-        attributes:
-          Intervention: "fluoxetine"
-          Comparator: "placebo"
-          Outcome: "Treatment-emergent adverse events (TEAEs)"
-
-      - extraction_class: "intervention_groupsize"
-        extraction_text: "desvenlafaxine, 69/115 [60.0%]"
-        attributes:
-          Intervention: "desvenlafaxine"
-          Comparator: "placebo"
-          Outcome: "Treatment-emergent adverse events (TEAEs)"
-
-      - extraction_class: "comparator_groupsize
-        extraction_text: "and placebo, 79/112 [70.5%])"
-        attributes:
-          Intervention: "desvenlafaxine"
-          Comparator: "placebo"
-          Outcome: "Treatment-emergent adverse events (TEAEs)"
-      
-      - extraction_class: "intervention_groupsize"
-        extraction_text: "fluoxetine, 72/112 [64.3%]"
-        attributes:
-          Intervention: "fluoxetine"
-          Comparator: "placebo"
-          Outcome: "Treatment-emergent adverse events (TEAEs)"
-
-  - text: 
-    extractions:
-      - extraction_class: "intervention_events"
-        extraction_text: "desvenlafaxine, 69/115 [60.0%]"
-        attributes:
-          Intervention: "desvenlafaxine"
-          Comparator: "placebo"
-          Outcome: "Treatment-emergent adverse events (TEAEs)"
+  - extraction_class: "arm_binary"
+    extraction_text: "placebo, 79/112 [70.5%]"
+    attributes:
+      ArmRole: "comparator"
+      ArmLabel: "placebo"
+      Outcome: "Treatment-emergent adverse events (TEAEs)"
+      Events: "79"
+      GroupSize: "112"
+      Percent: "70.5"

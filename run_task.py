@@ -1,5 +1,5 @@
 import sys, time, threading, os
-from utils import get_xml, list_pmcids, get_icos, get_prompt_static, get_fewshotexamples_static, visualize
+from utils import get_xml, list_pmcids, get_icos, get_prompt_static, get_fewshotexamples_static, visualize, get_fulltext
 import json
 import langextract as lx
 from dotenv import load_dotenv, find_dotenv
@@ -8,8 +8,12 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 pdf_folder = "data/PDF_test"
+markdown_folder = "data/Markdown"
 output_folder = "./outputs"
+
 os.makedirs(output_folder, exist_ok=True)
+os.makedirs(pdf_folder, exist_ok=True)
+os.makedirs(markdown_folder, exist_ok=True)
 
 pmcid_lst = list_pmcids(pdf_folder)
 
@@ -45,8 +49,8 @@ def run_task(model="gemini-2.5-flash"):
     for i, pmcid in enumerate(pmcid_lst, 1):
         label = f"[{i}/{total}] PMCID={pmcid} extracting…"
         prompt = get_prompt_static()
-        input_text = get_xml(pmcid)
-        examples = get_fewshotexamples_static()
+        input_text = get_xml(pmcid, xml_folder_path="data/XML_fulltext")
+        examples = get_fewshotexamples_static(xml = True)
 
         try:
             with Spinner(label):
@@ -55,6 +59,8 @@ def run_task(model="gemini-2.5-flash"):
                     prompt_description=prompt,
                     examples=examples,
                     model_id=model,
+                    extraction_passes=5,
+                    max_workers = 10,
                     fence_output=True,
                     use_schema_constraints=False,
                 )
@@ -72,10 +78,9 @@ def run_task(model="gemini-2.5-flash"):
         except Exception as e:
             print(f"\n[{i}/{total}] PMCID={pmcid} ✗ failed: {e}", flush=True)
 
-# Run with your chosen model    
+        visualize(pmcid, output_dir=output_folder)    
+
 
 #run_task(model="gpt-5-mini")
 
 
-
-visualize(5771543, output_dir=output_folder)
