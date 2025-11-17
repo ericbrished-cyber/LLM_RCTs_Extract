@@ -123,27 +123,75 @@ def simplified_entry(entry):
     }
     return simplified_entry
 
+# Add these functions to your utils.py
 
-def visualize(pmcid, output_dir):
-    """HTML-visualization of the Langextract output"""
+def get_prompt_with_icos(pmcid):
+    """
+    Generate a prompt with specific ICOs to extract for a given PMCID.
+    Uses the existing get_icos() function to retrieve annotations.
+    
+    Args:
+        pmcid (int or str): The PMCID to get ICOs for
+    
+    Returns:
+        str: Prompt instructing extraction of specific ICOs
+    """
+    icos_dict = get_icos(pmcid)
+    
+    if not icos_dict:
+        # Fallback to generic prompt if no ICOs found
+        return get_prompt_static()
+    
+    icos_list = []
+    for entry_id, (intervention, comparator, outcome) in icos_dict.items():
+        icos_list.append(f"- {intervention} vs {comparator} for {outcome}")
+    
+    icos_text = "\n".join(icos_list)
+    
+    prompt = f"""Extract statistical information for the following specific comparisons:
 
-    # 1) expected path
-    path = os.path.join(output_dir, f"{pmcid}.jsonl")
+{icos_text}
 
-    # 2) if not found, try to find a close match (e.g., multiple runs or suffixes)
+For each comparison, extract:
+- Sample sizes (n) for each group
+- Statistical results (means, SDs, medians, IQRs, percentages, etc.)
+- P-values and confidence intervals
+- Effect sizes if reported
+
+Only extract data related to these specific interventions, comparators, and outcomes."""
+    
+    return prompt
+
+
+def visualize(pmcid, output_dir, suffix=""):
+    """
+    HTML-visualization of the Langextract output
+    
+    Args:
+        pmcid: The PMCID of the article
+        output_dir: Directory containing the JSONL files
+        suffix: Optional suffix added to the filename (e.g., "_all_xml")
+    """
+    import glob
+    
+    # 1) Try exact match with suffix
+    path = os.path.join(output_dir, f"{pmcid}{suffix}.jsonl")
+    
+    # 2) If not found, try to find a close match
     if not os.path.exists(path):
         matches = sorted(glob.glob(os.path.join(output_dir, f"*{pmcid}*.jsonl")))
         if not matches:
             raise FileNotFoundError(f"No JSONL for PMCID={pmcid} in {output_dir}")
         path = matches[-1]  # pick the latest by name
-
-    # 3) visualize and write HTML
+    
+    # 3) Visualize and write HTML
     html = lx.visualize(path)
-    out_html = os.path.join(output_dir, f"visualization_{pmcid}.html")
+    
+    # Extract just the filename without extension for the output
+    base_name = os.path.splitext(os.path.basename(path))[0]
+    out_html = os.path.join(output_dir, f"visualization_{base_name}.html")
+    
     with open(out_html, "w", encoding="utf-8") as f:
         f.write(getattr(html, "data", html))  # handle Jupyter objects or plain str
-
+    
     print(f"✔ Visualization written to: {os.path.abspath(out_html)}")
-
-
-visualize(output_dir="./outputs", pmcid=4357072)
