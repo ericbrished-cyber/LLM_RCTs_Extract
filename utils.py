@@ -90,27 +90,61 @@ def get_xml(pmcid, xml_folder_path="data/XML"):
     else:
         return f"XML file for PMCID {pmcid} not found in {xml_folder_path}."
 
+from pathlib import Path
+
+import yaml
+import langextract as lx
+
+
+def _build_char_interval(item):
+    """Create a CharInterval from a YAML dict if present."""
+    ci = item.get("char_interval")
+    if not ci:
+        return None
+    return lx.data.CharInterval(
+        start_pos=ci["start_pos"],
+        end_pos=ci["end_pos"],
+    )
+
+
 def get_fewshotexamples_static(few_shots_folder="few-shots", xml=False):
-    # Select the appropriate YAML file based on the xml flag
+    """
+    Load few-shot examples from a YAML file and convert them to LangExtract ExampleData.
+
+    If `xml` is True, loads `examples_XML.yaml`, otherwise `examples.yaml`.
+    """
+    few_shots_folder = Path(few_shots_folder)
     yaml_filename = "examples_XML.yaml" if xml else "examples.yaml"
-    yaml_file = os.path.join(few_shots_folder, yaml_filename)
-    
-    with open(yaml_file, "r", encoding="utf-8") as f:
+    yaml_file = few_shots_folder / yaml_filename
+
+    with yaml_file.open("r", encoding="utf-8") as f:
         data = yaml.safe_load(f) or {}
-    
+
     examples = []
+
     for ex in data.get("examples", []):
-        extractions = [
-            lx.data.Extraction(
-                extraction_class=it["extraction_class"],
-                extraction_text=it["extraction_text"],
-                attributes=it["attributes"]
+        text = ex["text"]
+        extractions = []
+
+        for item in ex.get("extractions", []):
+            extractions.append(
+                lx.data.Extraction(
+                    extraction_class=item["extraction_class"],
+                    extraction_text=item["extraction_text"],
+                    attributes=item.get("attributes", {}),
+                    char_interval=_build_char_interval(item),
+                )
             )
-            for it in ex.get("extractions", [])
-        ]
-        examples.append(lx.data.ExampleData(text=ex["text"], extractions=extractions))
-    
+
+        examples.append(
+            lx.data.ExampleData(
+                text=text,
+                extractions=extractions,
+            )
+        )
+
     return examples
+
 
 def simplified_entry(entry):
     simplified_entry = {

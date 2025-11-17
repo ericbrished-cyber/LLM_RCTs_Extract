@@ -10,7 +10,7 @@ examples:
       Intervention: "WGJ"
       Outcome: "Mean body weight gain"
 
-  - extraction_class: "intervention_n"
+  - extraction_class: "intervention_group_size"
     extraction_text: "30"
     char_interval:
       start_pos: 51
@@ -27,7 +27,7 @@ examples:
       Comparator: "WA"
       Outcome: "Mean body weight gain"
 
-  - extraction_class: "comparator_n"
+  - extraction_class: "comparator_group_size"
     extraction_text: "30"
     char_interval:
       start_pos: 51
@@ -44,7 +44,7 @@ examples:
       Intervention: "WGJ"
       Outcome: "Duration of illness (h)"
 
-  - extraction_class: "intervention_n"
+  - extraction_class: "intervention_group_size"
     extraction_text: "30"
     char_interval:
       start_pos: 140
@@ -61,7 +61,7 @@ examples:
       Comparator: "WA"
       Outcome: "Duration of illness (h)"
 
-  - extraction_class: "comparator_n"
+  - extraction_class: "comparator_group_size"
     extraction_text: "30"
     char_interval:
       start_pos: 140
@@ -78,7 +78,7 @@ examples:
       Intervention: "WGJ"
       Outcome: "Fecal losses"
 
-  - extraction_class: "intervention_n"
+  - extraction_class: "intervention_group_size"
     extraction_text: "30"
     char_interval:
       start_pos: 223
@@ -95,7 +95,7 @@ examples:
       Comparator: "WA"
       Outcome: "Fecal losses"
 
-  - extraction_class: "comparator_n"
+  - extraction_class: "comparator_group_size"
     extraction_text: "30"
     char_interval:
       start_pos: 223
