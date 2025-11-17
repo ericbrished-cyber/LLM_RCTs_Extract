@@ -43,21 +43,14 @@ class Spinner:
             self._t.join()
 
 def run_task(model="gemini-2.5-flash"):
-    # Convert PDFs to markdown before processing
-    md_output_dir = markdown_folder
-    print(f"Converting PDFs to markdown...", flush=True)
-    from pdf_converter import convert_pdf_folder
-    conversions = convert_pdf_folder(pdf_folder, md_output_dir)
-    print(f"✓ Converted {len(conversions)} PDFs to markdown\n", flush=True)
-    
     total = len(pmcid_lst)
     print(f"Found {total} PDFs. Output → {os.path.abspath(output_folder)}", flush=True)
 
     for i, pmcid in enumerate(pmcid_lst, 1):
         label = f"[{i}/{total}] PMCID={pmcid} extracting…"
         prompt = get_prompt_static()
-        input_text = get_fulltext(pmcid)
-        examples = get_fewshotexamples_static()
+        input_text = get_xml(pmcid, xml_folder_path="data/XML_fulltext")
+        examples = get_fewshotexamples_static(xml = True)
 
         try:
             with Spinner(label):
@@ -85,9 +78,9 @@ def run_task(model="gemini-2.5-flash"):
         except Exception as e:
             print(f"\n[{i}/{total}] PMCID={pmcid} ✗ failed: {e}", flush=True)
 
-
-run_task(model="gpt-5-mini")
-
+        visualize(pmcid, output_dir=output_folder)    
 
 
-#visualize(3648394, output_dir=output_folder)
+#run_task(model="gpt-5-mini")
+
+

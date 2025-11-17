@@ -37,7 +37,7 @@ def download_pmc_xml(pmcid, output_dir="data/XML"):
         
         # Fetch XML from PMC
         handle = efetch(db="pmc", id=pmcid_str, retmode="xml")
-        xml_content = handle.read().decode("utf-8")
+        xml_content = handle.read().decode("utf-8") # type: ignore
         handle.close()
         
         # Write to file

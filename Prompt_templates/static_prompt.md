@@ -8,5 +8,3 @@ ONLY ANNOTATE THESE THINGS:
 For the type of outcome (binary/continuous):
         - **Continuous outcomes:** group_size_intervention, group_size_comparator, mean_intervention, mean_comparator, sd_intervention and sd_comparator.
         - **Binary outcomes:** group_size_intervention, group_size_comparator, events_intervention and events_comparator.
-
-Only raw numbers are preferred. For instance if a group_size is presented as n=20, extract just the number: 20.
