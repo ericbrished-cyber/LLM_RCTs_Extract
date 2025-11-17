@@ -114,11 +114,23 @@ examples:
       Intervention: "desvenlafaxine"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
 
+  - extraction_class: "intervention_rate"
+    extraction_text: "60.0%"
+    attributes:
+      Intervention: "desvenlafaxine"
+      Outcome: "Treatment-emergent adverse events (TEAEs)"
+
   - extraction_class: "comparator_events"
     extraction_text: "79"
     char_interval:
       start_pos: 155
       end_pos: 157
+    attributes:
+      Comparator: "placebo"
+      Outcome: "Treatment-emergent adverse events (TEAEs)"
+
+  - extraction_class: "comparator_rate"
+    extraction_text: "70.5%"
     attributes:
       Comparator: "placebo"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
@@ -132,7 +144,7 @@ examples:
       Intervention: "fluoxetine"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
 
-  - extraction_class: "intervention_groupsize"
+  - extraction_class: "intervention_group_size"
     extraction_text: "115"
     char_interval:
       start_pos: 101
@@ -140,7 +152,7 @@ examples:
     attributes:
       Intervention: "desvenlafaxine"
 
-  - extraction_class: "comparator_groupsize"
+  - extraction_class: "comparator_group_size"
     extraction_text: "112"
     char_interval:
       start_pos: 158
@@ -148,10 +160,19 @@ examples:
     attributes:
       Comparator: "placebo"
 
-  - extraction_class: "intervention_groupsize"
+  - extraction_class: "intervention_group_size"
     extraction_text: "112"
     char_interval:
       start_pos: 129
       end_pos: 132
     attributes:
       Intervention: "fluoxetine"
+
+  - extraction_class: "total_group_size"
+    extraction_text: "339"
+
+  - extraction_class: "total_events"
+    extraction_text: "220"
+
+  - extraction_class: "total_rate"
+    extraction_text: "64.9%"

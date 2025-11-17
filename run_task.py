@@ -151,10 +151,10 @@ def run_task(
                     prompt_description=prompt,
                     examples=examples,
                     model_id=model,
-                    extraction_passes=5,
+                    extraction_passes=2,
                     max_workers=10,
-                    fence_output=True,
-                    use_schema_constraints=False,
+                    fence_output=True, #Needed for GPT 5
+                    use_schema_constraints=False, #Needed for GPT 5
                 )
             
             # Success line
@@ -198,5 +198,3 @@ if __name__ == "__main__":
     
     # Extract specific ICOs from PDF
             run_task(model="gpt-5-mini", source_type="pdf", extraction_mode="guided")
-    
-    pass

@@ -7,4 +7,5 @@ You're task is to extract numerical statistical results from a randomized contro
 ONLY ANNOTATE THESE THINGS:
 For the type of outcome (binary/continuous):
          - **Continuous outcomes:** intervention_group_size, comparator_group_size, intervention_mean, comparator_mean, intervention_standard_deviation and comparator_standard_deviation.
-        - **Binary outcomes:** intervention_group_size, comparator_group_size, intervention_events and comparator_events.
+        - **Binary outcomes:** intervention_group_size, comparator_group_size, intervention_events, comparator_events, comparator_rate, and intervention_rate.
+
