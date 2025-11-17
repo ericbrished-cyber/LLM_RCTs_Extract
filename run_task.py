@@ -188,15 +188,15 @@ def run_task(
 # Example usage
 if __name__ == "__main__":
     # Extract all stats from XML
-    # run_task(model="gemini-2.5-flash", source_type="xml", extraction_mode="all")
+    # run_task(model="gpt-5-mini", source_type="xml", extraction_mode="all")
     
     # Extract all stats from PDF (via Markdown)
-    # run_task(model="gemini-2.5-flash", source_type="pdf", extraction_mode="all")
+    # run_task(model="gpt-5-mini", source_type="pdf", extraction_mode="all")
     
     # Extract specific ICOs from XML
-    #run_task(model="gemini-2.5-flash", source_type="xml", extraction_mode="guided")
+    run_task(model="gpt-5-mini", source_type="xml", extraction_mode="guided")
     
     # Extract specific ICOs from PDF
-    run_task(model="gpt-5-mini", source_type="pdf", extraction_mode="guided")
+    #run_task(model="gpt-5-mini", source_type="pdf", extraction_mode="guided")
     
     pass

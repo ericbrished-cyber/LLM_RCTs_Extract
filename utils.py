@@ -90,27 +90,61 @@ def get_xml(pmcid, xml_folder_path="data/XML"):
     else:
         return f"XML file for PMCID {pmcid} not found in {xml_folder_path}."
 
+from pathlib import Path
+
+import yaml
+import langextract as lx
+
+
+def _build_char_interval(item):
+    """Create a CharInterval from a YAML dict if present."""
+    ci = item.get("char_interval")
+    if not ci:
+        return None
+    return lx.data.CharInterval(
+        start_pos=ci["start_pos"],
+        end_pos=ci["end_pos"],
+    )
+
+
 def get_fewshotexamples_static(few_shots_folder="few-shots", xml=False):
-    # Select the appropriate YAML file based on the xml flag
+    """
+    Load few-shot examples from a YAML file and convert them to LangExtract ExampleData.
+
+    If `xml` is True, loads `examples_XML.yaml`, otherwise `examples.yaml`.
+    """
+    few_shots_folder = Path(few_shots_folder)
     yaml_filename = "examples_XML.yaml" if xml else "examples.yaml"
-    yaml_file = os.path.join(few_shots_folder, yaml_filename)
-    
-    with open(yaml_file, "r", encoding="utf-8") as f:
+    yaml_file = few_shots_folder / yaml_filename
+
+    with yaml_file.open("r", encoding="utf-8") as f:
         data = yaml.safe_load(f) or {}
-    
+
     examples = []
+
     for ex in data.get("examples", []):
-        extractions = [
-            lx.data.Extraction(
-                extraction_class=it["extraction_class"],
-                extraction_text=it["extraction_text"],
-                attributes=it["attributes"]
+        text = ex["text"]
+        extractions = []
+
+        for item in ex.get("extractions", []):
+            extractions.append(
+                lx.data.Extraction(
+                    extraction_class=item["extraction_class"],
+                    extraction_text=item["extraction_text"],
+                    attributes=item.get("attributes", {}),
+                    char_interval=_build_char_interval(item),
+                )
             )
-            for it in ex.get("extractions", [])
-        ]
-        examples.append(lx.data.ExampleData(text=ex["text"], extractions=extractions))
-    
+
+        examples.append(
+            lx.data.ExampleData(
+                text=text,
+                extractions=extractions,
+            )
+        )
+
     return examples
+
 
 def simplified_entry(entry):
     simplified_entry = {
@@ -123,8 +157,6 @@ def simplified_entry(entry):
     }
     return simplified_entry
 
-# Add these functions to your utils.py
-
 def get_prompt_with_icos(pmcid):
     """
     Generate a prompt with specific ICOs to extract for a given PMCID.
@@ -136,29 +168,46 @@ def get_prompt_with_icos(pmcid):
     Returns:
         str: Prompt instructing extraction of specific ICOs
     """
+    from pathlib import Path
+    
     icos_dict = get_icos(pmcid)
     
     if not icos_dict:
         # Fallback to generic prompt if no ICOs found
         return get_prompt_static()
     
+    # Format ICOs in the same style as static_prompt.md
     icos_list = []
     for entry_id, (intervention, comparator, outcome) in icos_dict.items():
-        icos_list.append(f"- {intervention} vs {comparator} for {outcome}")
+        icos_list.append(f"    Intervention: {intervention}\n    Comparator: {comparator}\n    Outcome: {outcome}")
     
-    icos_text = "\n".join(icos_list)
+    icos_text = "\n\n".join(icos_list)
     
-    prompt = f"""Extract statistical information for the following specific comparisons:
+    # Load template and substitute ICOs
+    template_path = Path("prompt_templates/static_prompt_ico.md")
+    if template_path.exists():
+        template = template_path.read_text(encoding="utf-8")
+        prompt = template.replace("{ico_list}", icos_text)
+    else:
+        # Fallback: inline template if file doesn't exist
+        prompt = f"""# Prompt
 
+Imagine you are a meta-analysis expert and expert on experimental design. Use this knowledge to grasp what the researchers actually did in the RCT. Using this baseline understanding move on with further tasks.
+
+You are extracting numerical statistical results from a randomized controlled trial. Return JSON with {{'extractions':[...]}} only.
+
+## What to annotate
+For each of the following (ICO-triplets):
 {icos_text}
 
-For each comparison, extract:
-- Sample sizes (n) for each group
-- Statistical results (means, SDs, medians, IQRs, percentages, etc.)
-- P-values and confidence intervals
-- Effect sizes if reported
+- For each such unique ICO-triplet annotate:
+        For the type of outcome (binary/continuous):
+        - **Continuous outcomes:** group_size_intervention, group_size_comparator, mean_intervention, mean_comparator, sd_intervention and sd_comparator.
+        - **Binary outcomes:** group_size_intervention, group_size_comparator, events_intervention and events_comparator.
 
-Only extract data related to these specific interventions, comparators, and outcomes."""
+- Merge duplicate ICOs that differ only in wording (e.g., "death or MI" ≈ "death or myocardial infarction").
+
+ONLY ANNOTATE THE ICO-TRIPLETS LISTED ABOVE. Do not extract data for other interventions, comparators, or outcomes not specified in the list."""
     
     return prompt
 

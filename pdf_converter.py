@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import pymupdf4llm
+import pymupdf.layout
 
 
 def convert_pdf_to_markdown(pdf_path, output_dir="data/Markdown"):
