@@ -9,9 +9,8 @@ For each of the following (ICO-triplets):
 {ico_list}
 
 - For each such unique ICO-triplet annotate:
-        For the type of outcome (binary/continuous):
         - **Continuous outcomes:** intervention_group_size, comparator_group_size, intervention_mean, comparator_mean, intervention_standard_deviation and comparator_standard_deviation.
-        - **Binary outcomes:** intervention_group_size, comparator_group_size, intervention_events and comparator_events.
+        - **Binary outcomes:** intervention_group_size, comparator_group_size, intervention_events, comparator_events, comparator_rate, and intervention_rate.
 
 - Merge duplicate ICOs that differ only in wording (e.g., "death or MI" ≈ "death or myocardial infarction").
 
