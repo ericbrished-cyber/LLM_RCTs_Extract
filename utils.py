@@ -89,10 +89,8 @@ def get_xml(pmcid, xml_folder_path="data/XML"):
     else:
         return f"XML file for PMCID {pmcid} not found in {xml_folder_path}."
 
-from pathlib import Path
 
-import yaml
-import langextract as lx
+
 
 
 def _build_char_interval(item):
