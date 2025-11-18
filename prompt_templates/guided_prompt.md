@@ -36,18 +36,36 @@ For **each such ICO triplet, and only these**:
   - `comparator_rate`
   - `total_rate`
 
-- **ICO identity**  
-  - Merge duplicates that differ only in wording (e.g., "death or MI" ≈ "death or myocardial infarction").  
-  - ALWAYS set the appropriate `Intervention`, `Comparator`, and `Outcome` attributes for every extraction that belongs to an ICO.
-
-> Do **NOT** extract data for interventions, comparators, or outcomes that are not in `{ico_list}`.
-
----
 ## Consistency & numeric rules (very important)
 
-Think of each ICO + metric as a **single cell in a table**. For each such cell:
+Treat each **arm + outcome + metric** as a single table cell.
 
-- **One value per ICO + metric**  
-  For a given ICO context (Intervention/Comparator + Outcome + any extra disambiguating attributes like Timepoint/Population) and `extraction_class`, you may output **at most one** numeric value.  
-  - Example: If `comparator_mean = 38` for `I=Paracetamol, C=Placebo, O=Body temperature (°C)`, you must NOT also output `comparator_mean = 39` for the same ICO context.
-  - Do not produce two extractions with the same ICO and `extraction_class` but different numbers.
+An arm-context is defined as:
+
+  (Outcome) + (either Intervention or Comparator) + (any extra disambiguating attributes like Timepoint or Population)
+
+For each such arm-context and `extraction_class`, you may output **at most one** numeric value.
+
+Examples:
+- For Outcome = "Treatment-emergent adverse events (TEAEs)" and Intervention = "desvenlafaxine",
+  you may extract at most one `intervention_group_size`, one `intervention_events`, and one `intervention_rate`.
+- For Outcome = "Mean body weight gain" and Comparator = "WA",
+  you may extract at most one `comparator_mean` and one `comparator_standard_deviation`.
+
+Do **NOT** produce two extractions with the same (Outcome, Intervention/Comparator, Timepoint/Population if relevant, `extraction_class`) but different numbers.
+
+### ICO identity
+
+You are only interested in the ICO triplets listed in `{ico_list}`.
+
+- Always set `Outcome` for every extraction.
+- For `intervention_*` classes:
+  - Always set `Intervention`.
+  - Set `Comparator` only if it is clearly identifiable in the local context (otherwise omit it).
+- For `comparator_*` classes:
+  - Always set `Comparator`.
+  - Set `Intervention` only if it is clearly identifiable in the local context (otherwise omit it).
+- For `total_*` classes:
+  - Set `Outcome` and, if available, a `Population` attribute (e.g. "all randomized", "safety population").
+
+Do **NOT** extract data for interventions, comparators, or outcomes that are not given in prompt (ignoring minor wording differences like "death or MI" vs "death or myocardial infarction").

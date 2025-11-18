@@ -159,32 +159,13 @@ def get_prompt_guided(pmcid):
     icos_text = "\n\n".join(icos_list)
     
     # Load template and substitute ICOs
-    template_path = Path("prompt_templates/static_prompt_ico.md")
+    template_path = Path("prompt_templates/guided_prompt.md")
     if template_path.exists():
         template = template_path.read_text(encoding="utf-8")
         prompt = template.replace("{ico_list}", icos_text)
+        return prompt
     else:
-        # Fallback: inline template if file doesn't exist
-        prompt = f"""# Prompt
-
-Imagine you are a meta-analysis expert and expert on experimental design. Use this knowledge to grasp what the researchers actually did in the RCT. Using this baseline understanding move on with further tasks.
-
-You are extracting numerical statistical results from a randomized controlled trial. Return JSON with {{'extractions':[...]}} only.
-
-## What to annotate
-For each of the following (ICO-triplets):
-{icos_text}
-
-- For each such unique ICO-triplet annotate:
-        For the type of outcome (binary/continuous):
-        - **Continuous outcomes:** group_size_intervention, group_size_comparator, mean_intervention, mean_comparator, sd_intervention and sd_comparator.
-        - **Binary outcomes:** group_size_intervention, group_size_comparator, events_intervention and events_comparator.
-
-- Merge duplicate ICOs that differ only in wording (e.g., "death or MI" ≈ "death or myocardial infarction").
-
-ONLY ANNOTATE THE ICO-TRIPLETS LISTED ABOVE. Do not extract data for other interventions, comparators, or outcomes not specified in the list."""
-    
-    return prompt
+        print("No prompt template found!")
 
 
 def visualize(pmcid, output_dir, suffix=""):
