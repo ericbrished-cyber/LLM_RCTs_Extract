@@ -34,28 +34,10 @@ def get_icos(pmcid):
     return result
 
 
-def get_prompt_static():
-    path = Path("prompt_templates/static_prompt.md")
+def get_prompt_all():
+    path = Path("prompt_templates/all_prompt.md")
     text = path.read_text(encoding="utf-8")
     return text
-
-# def get_prompt(pmcid):
-#     ICOs = get_icos(pmcid)
-
-#     # Logic to generate the prompt based on the entry
-#     if entry["outcome_type"] == "binary":
-#         with open('prompt_templates/templates_binary.yaml', 'r') as binary_template_file:
-#             binary_template = binary_template_file.read()
-#         return binary_template.replace("{{intervention}}", entry["intervention"]) \
-#                               .replace("{{comparator}}", entry["comparator"]) \
-#                               .replace("{{outcome}}", entry["outcome"])
-#     else:
-#         with open('prompt_templates/templates_continuous.yaml', 'r') as continuous_template_file:
-#             continuous_template = continuous_template_file.read()
-#         return continuous_template.replace("{{intervention}}", entry["intervention"]) \
-#                                   .replace("{{comparator}}", entry["comparator"]) \
-#                                   .replace("{{outcome}}", entry["outcome"])
-
 
 
 def get_fulltext(pmcid, text_folder_path="data/Markdown"):
@@ -89,10 +71,6 @@ def get_xml(pmcid, xml_folder_path="data/XML"):
     else:
         return f"XML file for PMCID {pmcid} not found in {xml_folder_path}."
 
-
-
-
-
 def _build_char_interval(item):
     """Create a CharInterval from a YAML dict if present."""
     ci = item.get("char_interval")
@@ -104,7 +82,7 @@ def _build_char_interval(item):
     )
 
 
-def get_fewshotexamples_static(few_shots_folder="few-shots", xml=False):
+def get_fewshotexamples(few_shots_folder="few-shots", xml=False):
     """
     Load few-shot examples from a YAML file and convert them to LangExtract ExampleData.
 
@@ -154,7 +132,7 @@ def simplified_entry(entry):
     }
     return simplified_entry
 
-def get_prompt_with_icos(pmcid):
+def get_prompt_guided(pmcid):
     """
     Generate a prompt with specific ICOs to extract for a given PMCID.
     Uses the existing get_icos() function to retrieve annotations.
@@ -171,7 +149,7 @@ def get_prompt_with_icos(pmcid):
     
     if not icos_dict:
         # Fallback to generic prompt if no ICOs found
-        return get_prompt_static()
+        return get_prompt_all()
     
     # Format ICOs in the same style as static_prompt.md
     icos_list = []
@@ -218,7 +196,6 @@ def visualize(pmcid, output_dir, suffix=""):
         output_dir: Directory containing the JSONL files
         suffix: Optional suffix added to the filename (e.g., "_all_xml")
     """
-    import glob
     
     # 1) Try exact match with suffix
     path = os.path.join(output_dir, f"{pmcid}{suffix}.jsonl")
@@ -241,3 +218,4 @@ def visualize(pmcid, output_dir, suffix=""):
         f.write(getattr(html, "data", html))  # handle Jupyter objects or plain str
     
     print(f"✔ Visualization written to: {os.path.abspath(out_html)}")
+
