@@ -150,3 +150,94 @@ examples:
     extraction_text: "64.9%"
     attributes:
       Outcome: "Treatment-emergent adverse events (TEAEs)"
+
+- text: "At week 8, CGI-I response rates were 78.2% (79/101) for fluoxetine, 68.7% (68/99) for desvenlafaxine, and 62.6% (62/99) for placebo."
+  extractions:
+  # Fluoxetine vs placebo
+  - extraction_class: "intervention_events"
+    extraction_text: "79"
+    # char_interval:  # valfritt att fylla
+    attributes:
+      Intervention: "fluoxetine"
+      Outcome: "CGI-I response rate"
+      Timepoint: "week 8"
+
+  - extraction_class: "intervention_group_size"
+    extraction_text: "101"
+    # char_interval:
+    attributes:
+      Intervention: "fluoxetine"
+      Outcome: "CGI-I response rate"
+      Timepoint: "week 8"
+
+  - extraction_class: "comparator_events"
+    extraction_text: "62"
+    # char_interval:
+    attributes:
+      Comparator: "placebo"
+      Outcome: "CGI-I response rate"
+      Timepoint: "week 8"
+
+  - extraction_class: "comparator_group_size"
+    extraction_text: "99"
+    # char_interval:
+    attributes:
+      Comparator: "placebo"
+      Outcome: "CGI-I response rate"
+      Timepoint: "week 8"
+
+  # Desvenlafaxine vs placebo
+  - extraction_class: "intervention_events"
+    extraction_text: "68"
+    # char_interval:
+    attributes:
+      Intervention: "desvenlafaxine"
+      Outcome: "CGI-I response rate"
+      Timepoint: "week 8"
+
+  - extraction_class: "intervention_group_size"
+    extraction_text: "99"
+    # char_interval:
+    attributes:
+      Intervention: "desvenlafaxine"
+      Outcome: "CGI-I response rate"
+      Timepoint: "week 8"
+
+  - extraction_class: "comparator_events"
+    extraction_text: "62"
+    # char_interval:
+    attributes:
+      Comparator: "placebo"
+      Outcome: "CGI-I response rate"
+      Timepoint: "week 8"
+
+  - extraction_class: "comparator_group_size"
+    extraction_text: "99"
+    # char_interval:
+    attributes:
+      Comparator: "placebo"
+      Outcome: "CGI-I response rate"
+      Timepoint: "week 8"
+
+- text: "Eight-week double-blind treatment was followed by a one-week double-blind transition phase for patients who entered the extension study or a one-week double-blind taper phase for those who did not."
+  extractions:
+  - extraction_class: "treatment_duration"
+    extraction_text: "Eight-week"
+    attributes:
+      Outcome: "Treatment duration"
+      Value: "8"
+      Unit: "weeks"
+
+  - extraction_class: "transition_phase_duration"
+    extraction_text: "one-week"
+    attributes:
+      Outcome: "Transition phase duration"
+      Value: "1"
+      Unit: "week"
+
+  - extraction_class: "taper_phase_duration"
+    extraction_text: "one-week"
+    attributes:
+      Outcome: "Taper phase duration"
+      Value: "1"
+      Unit: "week"
