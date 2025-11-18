@@ -320,3 +320,4 @@ if __name__ == "__main__":
     extraction_file = "outputs/5419060_guided_pdf.jsonl"
     gold_path = "gold-standard/annotated_rct_dataset.json"
     compare_values_for_pmcid(extraction_file, gold_path)
+    

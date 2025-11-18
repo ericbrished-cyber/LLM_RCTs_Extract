@@ -4,36 +4,24 @@ examples:
   # Mean body weight gain
   - extraction_class: "intervention_mean"
     extraction_text: "50.6"
-    char_interval:
-      start_pos: 28
-      end_pos: 32
     attributes:
       Intervention: "WGJ"
       Outcome: "Mean body weight gain"
 
   - extraction_class: "intervention_group_size"
     extraction_text: "30"
-    char_interval:
-      start_pos: 51
-      end_pos: 53
     attributes:
       Intervention: "WGJ"
       Outcome: "Mean body weight gain"
 
   - extraction_class: "comparator_mean"
     extraction_text: "-0.7"
-    char_interval:
-      start_pos: 41
-      end_pos: 45
     attributes:
       Comparator: "WA"
       Outcome: "Mean body weight gain"
 
   - extraction_class: "comparator_group_size"
     extraction_text: "30"
-    char_interval:
-      start_pos: 51
-      end_pos: 53
     attributes:
       Comparator: "WA"
       Outcome: "Mean body weight gain"
@@ -41,36 +29,24 @@ examples:
   # Duration of illness (h)
   - extraction_class: "intervention_mean"
     extraction_text: "47.5"
-    char_interval:
-      start_pos: 109
-      end_pos: 113
     attributes:
       Intervention: "WGJ"
       Outcome: "Duration of illness (h)"
 
   - extraction_class: "intervention_group_size"
     extraction_text: "30"
-    char_interval:
-      start_pos: 140
-      end_pos: 142
     attributes:
       Intervention: "WGJ"
       Outcome: "Duration of illness (h)"
 
   - extraction_class: "comparator_mean"
     extraction_text: "26.5"
-    char_interval:
-      start_pos: 125
-      end_pos: 129
     attributes:
       Comparator: "WA"
       Outcome: "Duration of illness (h)"
 
   - extraction_class: "comparator_group_size"
     extraction_text: "30"
-    char_interval:
-      start_pos: 140
-      end_pos: 142
     attributes:
       Comparator: "WA"
       Outcome: "Duration of illness (h)"
@@ -78,36 +54,24 @@ examples:
   # Fecal losses (g/kg/h)
   - extraction_class: "intervention_mean"
     extraction_text: "3.59"
-    char_interval:
-      start_pos: 192
-      end_pos: 196
     attributes:
       Intervention: "WGJ"
       Outcome: "Fecal losses (g/kg/h)"
 
   - extraction_class: "intervention_group_size"
     extraction_text: "30"
-    char_interval:
-      start_pos: 223
-      end_pos: 225
     attributes:
       Intervention: "WGJ"
       Outcome: "Fecal losses (g/kg/h)"
 
   - extraction_class: "comparator_mean"
     extraction_text: "2.19"
-    char_interval:
-      start_pos: 208
-      end_pos: 212
     attributes:
       Comparator: "WA"
       Outcome: "Fecal losses (g/kg/h)"
 
   - extraction_class: "comparator_group_size"
     extraction_text: "30"
-    char_interval:
-      start_pos: 223
-      end_pos: 225
     attributes:
       Comparator: "WA"
       Outcome: "Fecal losses (g/kg/h)"
@@ -117,27 +81,18 @@ examples:
   # Desvenlafaxine arm
   - extraction_class: "intervention_events"
     extraction_text: "69"
-    char_interval:
-      start_pos: 98
-      end_pos: 100
     attributes:
       Intervention: "desvenlafaxine"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
 
   - extraction_class: "intervention_rate"
     extraction_text: "60.0%"
-    char_interval:
-      start_pos: 106
-      end_pos: 111
     attributes:
       Intervention: "desvenlafaxine"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
 
   - extraction_class: "intervention_group_size"
     extraction_text: "115"
-    char_interval:
-      start_pos: 101
-      end_pos: 104
     attributes:
       Intervention: "desvenlafaxine"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
@@ -145,27 +100,18 @@ examples:
   # Fluoxetine arm
   - extraction_class: "intervention_events"
     extraction_text: "72"
-    char_interval:
-      start_pos: 126
-      end_pos: 128
     attributes:
       Intervention: "fluoxetine"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
 
   - extraction_class: "intervention_rate"
     extraction_text: "64.3%"
-    char_interval:
-      start_pos: 134
-      end_pos: 139
     attributes:
       Intervention: "fluoxetine"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
 
   - extraction_class: "intervention_group_size"
     extraction_text: "112"
-    char_interval:
-      start_pos: 129
-      end_pos: 132
     attributes:
       Intervention: "fluoxetine"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
@@ -173,27 +119,18 @@ examples:
   # Placebo arm
   - extraction_class: "comparator_events"
     extraction_text: "79"
-    char_interval:
-      start_pos: 155
-      end_pos: 157
     attributes:
       Comparator: "placebo"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
 
   - extraction_class: "comparator_rate"
     extraction_text: "70.5%"
-    char_interval:
-      start_pos: 163
-      end_pos: 168
     attributes:
       Comparator: "placebo"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
 
   - extraction_class: "comparator_group_size"
     extraction_text: "112"
-    char_interval:
-      start_pos: 158
-      end_pos: 161
     attributes:
       Comparator: "placebo"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
@@ -201,18 +138,15 @@ examples:
   # Totals
   - extraction_class: "total_events"
     extraction_text: "220"
-    # char_interval:  # TODO
     attributes:
       Outcome: "Treatment-emergent adverse events (TEAEs)"
 
   - extraction_class: "total_group_size"
     extraction_text: "339"
-    # char_interval:  # TODO
     attributes:
       Outcome: "Treatment-emergent adverse events (TEAEs)"
 
   - extraction_class: "total_rate"
     extraction_text: "64.9%"
-    # char_interval:  # TODO
     attributes:
       Outcome: "Treatment-emergent adverse events (TEAEs)"

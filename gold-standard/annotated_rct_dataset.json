@@ -12743,7 +12743,7 @@
     "id": 491,
     "evidence_inference_prompt_id": 6484,
     "pmcid": 5419060,
-    "outcome": "Sample rejection rate: CHC A",
+    "outcome": "Sample rejection rate: CHC   A",
     "intervention": "Phlebotomy training programme",
     "comparator": "Control",
     "outcome_type": "binary",
@@ -12775,7 +12775,8 @@
     "outcome_type": "binary",
     "intervention_events": 48,
     "intervention_group_size": 4114,
-    "comparator_events": 45,
+    "comparator_events": 45
+    ,
     "comparator_group_size": 3973,
     "intervention_mean": "",
     "intervention_standard_deviation": "",
