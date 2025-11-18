@@ -1,6 +1,5 @@
 import json
 import os
-import pdfplumber
 import yaml
 from pathlib import Path
 import re
