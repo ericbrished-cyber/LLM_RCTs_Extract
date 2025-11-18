@@ -123,11 +123,12 @@ examples:
     attributes:
       Intervention: "desvenlafaxine"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
-      Timepoint: ""
 
   - extraction_class: "intervention_rate"
     extraction_text: "60.0%"
-    # char_interval:  # TODO: fill exact indices if you want span supervision
+    char_interval:
+      start_pos: 106
+      end_pos: 111
     attributes:
       Intervention: "desvenlafaxine"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
@@ -153,7 +154,9 @@ examples:
 
   - extraction_class: "intervention_rate"
     extraction_text: "64.3%"
-    # char_interval:  # TODO
+    char_interval:
+      start_pos: 134
+      end_pos: 139
     attributes:
       Intervention: "fluoxetine"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
@@ -179,7 +182,9 @@ examples:
 
   - extraction_class: "comparator_rate"
     extraction_text: "70.5%"
-    # char_interval:  # TODO
+    char_interval:
+      start_pos: 163
+      end_pos: 168
     attributes:
       Comparator: "placebo"
       Outcome: "Treatment-emergent adverse events (TEAEs)"

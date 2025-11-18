@@ -124,7 +124,7 @@ def run_task(
 
         # ===== STEP 3: Run extraction =====
         label = f"[{i}/{total}] PMCID={pmcid} ({mode_label}) extracting…"
-        
+
         start_time = time.perf_counter()  # start clock
         try:
             
@@ -172,7 +172,7 @@ def run_task(
 
         # ===== STEP 4: Visualize =====
         try:
-            visualize(pmcid, output_dir=f"{output_folder}/visualization", suffix=suffix)
+            visualize(pmcid, output_dir=output_folder, suffix=suffix)
         except Exception as e:
             print(f"[{i}/{total}] PMCID={pmcid} ⚠ visualization failed: {e}", flush=True)
 
@@ -188,4 +188,4 @@ if __name__ == "__main__":
     #run_task(model="gpt-5-mini", source_type="xml", extraction_mode="guided")
     
     # Extract specific ICOs from PDF
-            run_task(model="gpt-5-mini", source_type="pdf", extraction_mode="guided")
+        run_task(model="gpt-5-mini", source_type="pdf", extraction_mode="guided")
