@@ -15,3 +15,5 @@ For each of the following (ICO-triplets):
 - Merge duplicate ICOs that differ only in wording (e.g., "death or MI" ≈ "death or myocardial infarction").
 
 ONLY ANNOTATE THE ICO-TRIPLETS LISTED ABOVE. Do not extract data for other interventions, comparators, or outcomes not specified in the list.
+
+Remember that for each extraction_class of a ICO triplet, there can only be one value extracted. For example, comparator_mean = 38; I: Paracetamol, C: Placebo, O: Body temperature measured in celsius. This value can only be comparator_mean = 38. Not comparator_mean = 38 and 39. 

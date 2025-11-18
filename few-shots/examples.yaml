@@ -123,6 +123,7 @@ examples:
     attributes:
       Intervention: "desvenlafaxine"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
+      Timepoint: ""
 
   - extraction_class: "intervention_rate"
     extraction_text: "60.0%"

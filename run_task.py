@@ -1,14 +1,18 @@
-import sys, time, threading, os
+import time, threading, os, time
+
 from utils import (
     get_xml, 
     get_fulltext, 
     list_pmcids, 
     get_icos, 
-    get_prompt_static, 
-    get_prompt_with_icos,
-    get_fewshotexamples_static, 
-    visualize
+    get_prompt_all, 
+    get_prompt_guided,
+    get_fewshotexamples, 
+    visualize,
 )
+
+from spinner import Spinner
+
 from pdf_converter import convert_pdf_to_markdown
 from XML_from_PMC import download_pmc_xml
 import json
@@ -30,30 +34,7 @@ os.makedirs(xml_folder, exist_ok=True)
 
 pmcid_lst = list_pmcids(pdf_folder)
 
-class Spinner:
-    def __init__(self, label: str):
-        self.label = label
-        self._stop = threading.Event()
-        self._t = None
-    def _spin(self):
-        glyph = "|/-\\"
-        i = 0
-        while not self._stop.is_set():
-            sys.stdout.write(f"\r{self.label} {glyph[i % 4]}")
-            sys.stdout.flush()
-            i += 1
-            time.sleep(0.1)
-        # clear line
-        sys.stdout.write("\r" + " " * (len(self.label) + 2) + "\r")
-        sys.stdout.flush()
-    def __enter__(self):
-        self._t = threading.Thread(target=self._spin, daemon=True)
-        self._t.start()
-        return self
-    def __exit__(self, *exc):
-        self._stop.set()
-        if self._t:
-            self._t.join()
+
 
 
 def run_task(
@@ -91,7 +72,7 @@ def run_task(
                     else:
                         print(f"[{i}/{total}] PMCID={pmcid} ✗ failed to download XML", flush=True)
                         continue
-                
+            
             elif source_type == "pdf":
                 # Convert PDF to Markdown if needed
                 pdf_path = os.path.join(pdf_folder, f"{pmcid}.pdf")
@@ -123,8 +104,8 @@ def run_task(
         # ===== STEP 2: Prepare prompt and examples =====
         if extraction_mode == "all":
             # Extract all statistical information
-            prompt = get_prompt_static()
-            examples = get_fewshotexamples_static(xml=(source_type == "xml"))
+            prompt = get_prompt_all()
+            examples = get_fewshotexamples(xml=(source_type == "xml"))
             mode_label = "all stats"
         
         elif extraction_mode == "guided":
@@ -134,8 +115,8 @@ def run_task(
                 print(f"[{i}/{total}] PMCID={pmcid} ⚠ no ICOs in annotations, skipping", flush=True)
                 continue
             
-            prompt = get_prompt_with_icos(pmcid)  # Pass pmcid, not icos dict
-            examples = get_fewshotexamples_static(xml=(source_type == "xml"))
+            prompt = get_prompt_guided(pmcid)  # Pass pmcid, not icos dict
+            examples = get_fewshotexamples(xml=(source_type == "xml"))
             mode_label = f"guided ({len(icos)} ICOs)"
         
         else:
@@ -144,7 +125,9 @@ def run_task(
         # ===== STEP 3: Run extraction =====
         label = f"[{i}/{total}] PMCID={pmcid} ({mode_label}) extracting…"
         
+        start_time = time.perf_counter()  # start clock
         try:
+            
             with Spinner(label):
                 result = lx.extract(
                     text_or_documents=input_text,
@@ -153,12 +136,16 @@ def run_task(
                     model_id=model,
                     extraction_passes=2,
                     max_workers=10,
-                    fence_output=True, #Needed for GPT 5
-                    use_schema_constraints=False, #Needed for GPT 5
+                    fence_output=True,       # Needed for OpenAI GPT-5 style models
+                    use_schema_constraints=False,  # Needed for OpenAI GPT-5 style models
                 )
-            
+            elapsed = time.perf_counter() - start_time  # time taken
+
             # Success line
-            print(f"[{i}/{total}] PMCID={pmcid} ✓ extracted. Saving…", flush=True)
+            print(
+                f"[{i}/{total}] PMCID={pmcid} ✓ extracted in {elapsed:.2f} s. Saving…",
+                flush=True,
+            )
             
             # Save with descriptive filename
             suffix = f"_{extraction_mode}_{source_type}"
@@ -167,23 +154,27 @@ def run_task(
             lx.io.save_annotated_documents(
                 [result],
                 output_name=output_name,
-                output_dir=output_folder
+                output_dir=output_folder,
             )
             print(f"[{i}/{total}] PMCID={pmcid} ✓ saved {output_name}", flush=True)
-            
+        
         except KeyboardInterrupt:
             print(f"\n[{i}/{total}] PMCID={pmcid} ✗ interrupted by user.", flush=True)
             raise
         except Exception as e:
-            print(f"\n[{i}/{total}] PMCID={pmcid} ✗ failed: {e}", flush=True)
-            continue
+            # If extraction crashes, elapsed is still meaningful if start_time was set
+            elapsed = time.perf_counter() - start_time if "start_time" in locals() else 0.0
+            print(
+                f"\n[{i}/{total}] PMCID={pmcid} ✗ failed after {elapsed:.2f} s: {e}",
+                flush=True,
+            )
+            continue  # skip visualization and move on to next PMCID
 
         # ===== STEP 4: Visualize =====
         try:
-            visualize(pmcid, output_dir=output_folder, suffix=suffix)
+            visualize(pmcid, output_dir=f"{output_folder}/visualization", suffix=suffix)
         except Exception as e:
             print(f"[{i}/{total}] PMCID={pmcid} ⚠ visualization failed: {e}", flush=True)
-
 
 # Example usage
 if __name__ == "__main__":
