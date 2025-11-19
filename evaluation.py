@@ -171,11 +171,47 @@ def evaluate_arm_facts(gold_facts, pred_facts):
         "f1": f1,
     }
 
+def print_mismatches(gold_facts, pred_facts):
+    tp = gold_facts & pred_facts
+    fp = pred_facts - gold_facts   # predicted but not in gold
+    fn = gold_facts - pred_facts   # in gold but not predicted
+
+    print("\n" + "=" * 80)
+    print("SUMMARY")
+    print("=" * 80)
+    print(f"TP: {len(tp)}  FP: {len(fp)}  FN: {len(fn)}")
+
+    # Helper for pretty-print
+    def fmt_fact(fact):
+        pmcid, outcome, role, arm, field, value = fact
+        role_label = "Intervention" if role == "I" else "Comparator"
+        return (
+            f"PMCID={pmcid}, Outcome={outcome!r}, "
+            f"{role_label}={arm!r}, field={field!r}, value={value}"
+        )
+
+    # False negatives: gold fact missing in predictions
+    if fn:
+        print("\n" + "=" * 80)
+        print("FALSE NEGATIVES (in gold, not predicted)")
+        print("=" * 80)
+        for fact in sorted(fn):
+            print("  ", fmt_fact(fact))
+
+    # False positives: predicted fact not in gold
+    if fp:
+        print("\n" + "=" * 80)
+        print("FALSE POSITIVES (predicted, not in gold)")
+        print("=" * 80)
+        for fact in sorted(fp):
+            print("  ", fmt_fact(fact))
+
 
 def evaluate_file(extraction_file: str, gold_file: str):
     pmcid = get_pmcid_from_filename(extraction_file)
     gold_facts = build_gold_arm_facts(gold_file, pmcid)
     pred_facts = build_pred_arm_facts(extraction_file)
+
     metrics = evaluate_arm_facts(gold_facts, pred_facts)
 
     print(f"PMCID: {pmcid}")
@@ -185,6 +221,10 @@ def evaluate_file(extraction_file: str, gold_file: str):
     print(f"Precision: {metrics['precision']:.3f}")
     print(f"Recall:    {metrics['recall']:.3f}")
     print(f"F1:        {metrics['f1']:.3f}")
+
+    # Now print non-matches
+    print_mismatches(gold_facts, pred_facts)
+
 
 
 if __name__ == "__main__":
