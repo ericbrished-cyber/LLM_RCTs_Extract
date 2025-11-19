@@ -204,8 +204,9 @@ def run_task_with_eval(
             "prompt_description": prompt,
             "examples": examples,
             "model_id": model,
-            "extraction_passes": 1 if is_gemini else 2,
-            "max_workers": 1 if is_gemini else 10,
+            "batch_length": 20,
+            "extraction_passes": 3,
+            "max_workers": 20,
         }
 
         if is_gpt5:
@@ -350,22 +351,22 @@ def main():
     """
     
     # Example 1: Run guided PDF extraction with evaluation
+    # run_task_with_eval(
+    #     model="gemini-2.5-flash",
+    #     source_type="pdf",
+    #     extraction_mode="guided",
+    #     run_evaluation=True,
+    #     run_name="gemini_guided_pdf_v1"
+    # )
+    
+    #Example 2: Run guided pdf extraction with evaluation
     run_task_with_eval(
-        model="gemini-2.5-flash",
+        model="gpt-5-mini",
         source_type="pdf",
         extraction_mode="guided",
         run_evaluation=True,
-        run_name="gemini_guided_pdf_v1"
+        run_name="gpt5_guided_pdf_v1"
     )
-    
-    # Example 2: Run guided XML extraction with evaluation
-    # run_task_with_eval(
-    #     model="gpt-5-mini",
-    #     source_type="xml",
-    #     extraction_mode="guided",
-    #     run_evaluation=True,
-    #     run_name="gpt5_guided_xml_v1"
-    # )
     
     # Example 3: Run all-stats extraction without immediate evaluation
     # run_task_with_eval(

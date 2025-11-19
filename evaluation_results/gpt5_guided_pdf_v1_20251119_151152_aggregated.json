@@ -1,0 +1,15 @@
+{
+  "run_name": "gpt5_guided_pdf_v1",
+  "num_articles": 5,
+  "total_gold_facts": 60,
+  "total_pred_facts": 137,
+  "total_tp": 28,
+  "total_fp": 109,
+  "total_fn": 32,
+  "macro_precision": 0.17949642696564722,
+  "macro_recall": 0.525,
+  "macro_f1": 0.26719551490456167,
+  "micro_precision": 0.20437956204379562,
+  "micro_recall": 0.4666666666666667,
+  "micro_f1": 0.28426395939086296
+}

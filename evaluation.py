@@ -96,7 +96,7 @@ def build_gold_arm_facts(gold_path: str, pmcid: int):
             val = normalize_value(raw_val)
             if val is None:
                 continue
-            
+
             if role == "I":
                 arm = I_name
             else:
@@ -228,6 +228,6 @@ def evaluate_file(extraction_file: str, gold_file: str):
 
 
 if __name__ == "__main__":
-    extraction_path = "outputs/4675066_guided_pdf.jsonl"
+    extraction_path = "outputs/4132222_guided_pdf.jsonl"
     gold_path = "gold-standard/annotated_rct_dataset.json"
     evaluate_file(extraction_path, gold_path)
