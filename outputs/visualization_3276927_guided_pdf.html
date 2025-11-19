@@ -1,0 +1,801 @@
+<style>
+.lx-highlight { position: relative; border-radius:3px; padding:1px 2px;}
+.lx-highlight .lx-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  background: #333;
+  color: #fff;
+  text-align: left;
+  border-radius: 4px;
+  padding: 6px 8px;
+  position: absolute;
+  z-index: 1000;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  max-width: 240px;
+  white-space: normal;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+.lx-highlight:hover .lx-tooltip { visibility: visible; opacity:1; }
+.lx-animated-wrapper { max-width: 100%; font-family: Arial, sans-serif; }
+.lx-controls {
+  background: #fafafa; border: 1px solid #90caf9; border-radius: 8px;
+  padding: 12px; margin-bottom: 16px;
+}
+.lx-button-row {
+  display: flex; justify-content: center; gap: 8px; margin-bottom: 12px;
+}
+.lx-control-btn {
+  background: #4285f4; color: white; border: none; border-radius: 4px;
+  padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 500;
+  transition: background-color 0.2s;
+}
+.lx-control-btn:hover { background: #3367d6; }
+.lx-progress-container {
+  margin-bottom: 8px;
+}
+.lx-progress-slider {
+  width: 100%; margin: 0; appearance: none; height: 6px;
+  background: #ddd; border-radius: 3px; outline: none;
+}
+.lx-progress-slider::-webkit-slider-thumb {
+  appearance: none; width: 18px; height: 18px; background: #4285f4;
+  border-radius: 50%; cursor: pointer;
+}
+.lx-progress-slider::-moz-range-thumb {
+  width: 18px; height: 18px; background: #4285f4; border-radius: 50%;
+  cursor: pointer; border: none;
+}
+.lx-status-text {
+  text-align: center; font-size: 12px; color: #666; margin-top: 4px;
+}
+.lx-text-window {
+  font-family: monospace; white-space: pre-wrap; border: 1px solid #90caf9;
+  padding: 12px; max-height: 260px; overflow-y: auto; margin-bottom: 12px;
+  line-height: 1.6;
+}
+.lx-attributes-panel {
+  background: #fafafa; border: 1px solid #90caf9; border-radius: 6px;
+  padding: 8px 10px; margin-top: 8px; font-size: 13px;
+}
+.lx-current-highlight {
+  border-bottom: 4px solid #ff4444;
+  font-weight: bold;
+  animation: lx-pulse 1s ease-in-out;
+}
+@keyframes lx-pulse {
+  0% { text-decoration-color: #ff4444; }
+  50% { text-decoration-color: #ff0000; }
+  100% { text-decoration-color: #ff4444; }
+}
+.lx-legend {
+  font-size: 12px; margin-bottom: 8px;
+  padding-bottom: 8px; border-bottom: 1px solid #e0e0e0;
+}
+.lx-label {
+  display: inline-block;
+  padding: 2px 4px;
+  border-radius: 3px;
+  margin-right: 4px;
+  color: #000;
+}
+.lx-attr-key {
+  font-weight: 600;
+  color: #1565c0;
+  letter-spacing: 0.3px;
+}
+.lx-attr-value {
+  font-weight: 400;
+  opacity: 0.85;
+  letter-spacing: 0.2px;
+}
+
+/* Add optimizations with larger fonts and better readability for GIFs */
+.lx-gif-optimized .lx-text-window { font-size: 16px; line-height: 1.8; }
+.lx-gif-optimized .lx-attributes-panel { font-size: 15px; }
+.lx-gif-optimized .lx-current-highlight { text-decoration-thickness: 4px; }
+</style>
+    <div class="lx-animated-wrapper lx-gif-optimized">
+      <div class="lx-attributes-panel">
+        <div class="lx-legend">Highlights Legend: <span class="lx-label" style="background-color:#D2E3FC;">comparator_group_size</span> <span class="lx-label" style="background-color:#C8E6C9;">comparator_mean</span> <span class="lx-label" style="background-color:#FEF0C3;">intervention_group_size</span> <span class="lx-label" style="background-color:#F9DEDC;">intervention_mean</span> <span class="lx-label" style="background-color:#FFDDBE;">total_group_size</span> <span class="lx-label" style="background-color:#EADDFF;">treatment_duration</span></div>
+        <div id="attributesContainer"></div>
+      </div>
+      <div class="lx-text-window" id="textWindow">
+        _Original Article_
+
+# **Effect of yoga therapy in reversible inguinal hernia: A quasi** **experimental study**
+
+
+Jagatheesan Alagesan, Suthakar Venkatachalam [1], Anandbabu Ramadass [2], Sankar B Mani
+
+
+Department of Allied Therapeutics, KJ Pandya College of Physiotherapy, Sumandeep Vidyapeeth, Vadodara, [1] Department of Yoga and Naturopathy,
+Alva’s College of Physiotherapy, Moodbidri, [2] Department of Physiotherapy, Loma Linda University, Loma Linda, CA, USA
+
+
+**Address for correspondence:** Dr. A. Jagatheesan,
+Associate Professor, KJ Pandya College of Physiotherapy, Sumandeep Vidyapeeth,
+
+Piparia, Vadodara - 391 760, Gujarat, India.
+
+E‑mail: jagatheesanmpt@yahoo.com
+
+
+
+
+
+
+
+**INTRODUCTION**
+
+
+“Hernia” is derived from the _Latin_ word for rupture. It is
+defined as an abnormal protrusion of an organ or tissue
+through a defect in its surrounding walls. [[1]] It may be
+operationally defined as the abnormal protrusion of a
+structure through a defect in the tissues that normally
+contain that structure. [[2]] Although hernia can occur at various
+sites of the body, these defects most commonly involve the
+abdominal wall, particularly the inguinal region. Abdominal
+wall hernias occur only at sites when the aponeurosis and
+fascia are not covered by striated muscle. These sites most
+commonly include the inguinal, femoral, and umbilical
+areas, the linea alba, the lower portion of the semilunar line,
+and sites of prior incisions. The “neck” or orifice of a hernia is
+located at the innermost musculoaponeurotic layer whereas
+
+
+
+the hernia sac is lined by peritoneum and protrudes from
+the neck. There is no consistent relationship between the
+area of hernia defect and the size of hernia sac. [[1]]
+
+
+Inguinal hernia is due to weakness of the abdominal
+muscles which holds the organs in their original positions.
+So the organ gets protruded through inguinal canal and
+sometimes to scrotum. The causes for inguinal hernia
+are congenital weakness or the developmental defect in
+the abdominal muscles or ligaments, unexpected pull
+while handling heavy item, which split the muscles and
+ligaments, elevated intra‑abdominal pressure, flabbiness
+of the abdominal muscles and obesity.
+
+
+**Incidence and prevalence**
+
+
+Hernias are a common problem; however, their true
+incidence is unknown. It is estimated that 5% of the
+population will develop an abdominal wall hernia, but
+the prevalence may be even higher. Approximately 75% of
+all hernias occur in the inguinal region. Based on national
+operative statistics, incisional hernias account for 15% to
+20% of all abdominal wall hernias, umbilical and epigastric
+hernias constitute 10% of hernias, femoral hernias for
+
+
+
+
+
+
+
+
+
+16 **International Journal of Yoga**  **Vol. 5**  **Jan-Jun-2012**
+
+
+Alagesan, _et al_ .: Yoga for inguinal hernia
+
+
+
+about 5%, and unusual hernias for the remainder. The
+prevalence of hernias increases with age, particularly for
+inguinal, umbilical, and femoral hernias. Men are 25 times
+more likely to have a groin hernia than women. [[1]]
+
+
+**Treatment**
+
+
+Reversible inguinal hernia may be treated non‑surgically or
+surgically. The non‑surgical intervention includes special
+type of belt, called a truss, to support the hernia and
+keep it from bulging out. The subjects will be advised to
+avoid any activities that cause abdominal strain. Surgical
+intervention is done by pushing the piece of intestine back
+into place and repairing the abdominal wall and so the
+intestine cannot push through again. Surgery is preferred
+to avoid the possibility of a strangulated hernia. [[3]]
+
+
+**Need for the study**
+
+
+The treatment options for hernia range from simple
+exercises to modern surgeries. There are various research
+literatures [[4‑7]] listing the use of surgeries and their
+complications. The yoga therapy is suggested by various
+yoga practitioners through awareness magazines/articles,
+but not yet proved by any scientific research; hence this
+study was aimed at testing the effect of selected asanas on
+reversible inguinal hernia which is not an acute medical
+problem but need to be treated.
+
+
+**MATERIALS AND METHODS**
+
+
+**Research design**
+
+
+The study was a quasi‑experimental design and ethical
+clearance was obtained from institutional review board.
+
+Consecutive sampling was followed in selection of the
+samples. All males diagnosed with reversible inguinal
+hernia in the age range between 24 years and 46 years were
+included in the study. Subjects with hypertension, heart
+problems, recent fractures, arthritis or vertebral problems,
+where special care is needed or yoga therapy might pose
+risk were excluded from the study **.** Subjects diagnosed
+between 23 [rd] July 2009 and 22 [nd] Feb 2010 in study
+setting as reversible inguinal hernia fulfilling inclusion
+and exclusion criteria and willing to participate in the
+research were recruited for the study. The total number of
+participants was <span class="lx-highlight lx-current-highlight" data-idx="0" style="background-color:#FFDDBE;">19</span>. All the subjects included in the study
+were treated with yoga therapy for duration of <span class="lx-highlight" data-idx="1" style="background-color:#EADDFF;">3 months</span>.
+
+
+**Procedure**
+
+
+Individuals who fulfilled the inclusion criteria were
+
+selected for the study by consecutive sampling method after
+obtaining informed consent from them. Pre‑intervention
+assessment was done by using hernia questionnaire. After
+pre‑intervention assessment, selected asanas were given
+
+
+
+for ten repetitions with corresponding breathing pattern
+followed by relaxation for 1 h daily for duration of three
+months. Initially asanas were done under the supervision
+of a trained yoga professional till the subjects become
+familiar with asanas. All subjects got familiarized with
+asanas in about two‑weeks duration. Later they practiced
+the asanas at their home and follow up was once in a week.
+Yoga therapy was continued for <span class="lx-highlight" data-idx="2" style="background-color:#EADDFF;">three months</span> and post
+intervention assessment was taken.
+
+
+Vajrasana, ushtrasana, paschimottanasana, pawanmuktasana,
+utthanpadasana, matsyasana and sarvangasana were
+selected based on its effects to compress inguinal canal,
+strengthen the abdominal muscles and to reduce the
+intra‑abdominal pressure, because weakness or flabbiness of
+abdominal muscles and elevated intra‑abdominal pressure
+may be the causes for the hernia in non‑congenital subjects
+included in this study.
+
+
+Vajrasana is a meditative asana not involving much of
+muscle work and was used as a preparatory for yoga
+therapy with added benefits of compressing inguinal canal
+which will prevent protrusion of abdominal contents.
+
+
+Ushtrasana and paschimottanasana were included based on
+the principle of proprioceptive neuro muscular facilitation
+technique namely repeated stretch [[8]] i.e. the stretch reflex
+elicited from muscles under the tension of elongation will
+facilitate muscles to contract. Ushtrasana will facilitate
+
+abdominal muscles to stretch and paschimottanasana will
+facilitate them to contract along with compression over
+inguinal canal.
+
+
+Pawanmuktasana strengthens abdominal muscles, compresses
+inguinal canal and also reduces intra‑abdominal pressure by
+releasing air from gastro intestinal tract and utthanpadasana
+has got direct strengthening effect over abdominal muscles.
+
+
+Matsyasana is complementary to sarvangasana included
+to neutralize the flexion force created over the normal
+
+neck and sarvangasana is to move abdominal contents
+toward thorax thereby reducing abdominal pressure and
+to prevent protrusion of abdominal contents or to facilitate
+replacement of herniated contents.
+
+
+**Data analysis and results**
+
+
+The pre‑intervention and post‑intervention assessments
+were carried out by using the hernia questionnaire designed
+for this study. This includes the details about intensity of
+pain, relieving factors, aggravating factors and frequency
+of occurrence in last two weeks which were used for
+
+analysis along with the general information. Schedule
+method of data collection was used. Data analysis including
+descriptive analysis and inferential analysis were done
+
+
+
+**International Journal of Yoga**  **Vol. 5**  **Jan-Jun-2012** 17
+
+
+Alagesan, _et al_ .: Yoga for inguinal hernia
+
+
+
+by using computerized software (SPSS‑11.5) Statistical
+package for social sciences, Version 11.5 for windows.
+
+
+**Descriptive statistics**
+
+
+Descriptive statistics includes measures of central tendency
+specifically the median and measures of dispersion namely
+minimum, maximum, first quartile, third quartile and
+quartile deviation for all the studied dependent variables
+before and after intervention.
+
+
+**Inferential statistics**
+
+
+Inferential statistics of significance testing was done by
+using Wilcoxon signed‑rank test with asymptomatic two
+tailed z test for paired observations i.e. before and after
+intervention for all studied variables.
+
+
+**General information**
+
+
+Nineteen subjects participated in the study. General
+information like age, side of bulge, first occurrence
+of symptoms, activity during first occurrence and
+effect of rest were also recorded for all participants as
+applicable.
+
+
+**Age group**
+
+
+Age of the subjects ranged from 24 to 46 years, with the
+mean of 36.26 years and standard deviation of 7.43 years.
+
+
+**Side involved**
+
+
+Out of nineteen subjects studied, ten presented with left
+side hernia, eight with right side hernia and remaining
+one presented with hernia on both sides.
+
+
+**First occurrence of the problem**
+
+
+Out of nineteen studied, eleven subjects were not able to
+retrieve any detail about first occurrence of the problem.
+For six subjects, the problem occurred during activity and
+taking rest relieved it. Remaining two was not clear about
+the exact activity during occurrence, but they gave the
+approximate duration of their problem. For all the subjects,
+there was no history of previous hernia.
+
+
+**Pain**
+
+
+Intensity of pain was measured with numeric pain rating
+scale starting from zero to ten where zero indicates no pain
+and ten indicates maximum tolerable pain, which was a
+part of the hernia questionnaire.
+
+
+Pain intensity before intervention ranged from three to
+eight with median of six and quartile deviation of one.
+
+
+
+Pain intensity after intervention was from zero to three
+with median of one and quartile deviation of one [Table 1,
+Figure 1]. The z value of Wilcoxon signed‑rank test which
+is equal to −3.864 with _P_ value&lt;0.001 denotes that there is
+statistically significant reduction in pain after intervention.
+
+
+**Aggravating factors**
+
+
+The participants were asked which of the five most
+common activities exacerbate the problem. The activities
+are exercise/walking, bowel movement, bladder activity,
+lifting and coughing/sneezing.
+
+
+Out of nineteen participated, 9 showed the presence of
+three activities, 6 showed the presence of four activities
+and remaining 4 showed the presence of all five activities
+before intervention.
+
+
+After three months of intervention with selected yogasanas,
+14 subjects presented with the presence of two activities to
+increase the problem, <span class="lx-highlight" data-idx="3" style="background-color:#F9DEDC;">1</span> presented with one activity and the
+remaining 4 subjects presented with no activity to increase
+the problem out of the five commonly found activities.
+
+
+Wilcoxon signed‑rank test z value of −3.875 with _P_ &lt;0.001
+denotes that there is statistically significant reduction in
+aggravating factors after yogic practice [Table 2, Figure 1].
+
+
+**Reliving factors**
+
+
+The symptoms of inguinal hernia may be relieved by three
+activities which reduce the intra‑abdominal pressure viz.
+
+
+**Table 1:** Data analysis for pain before and after
+intervention
+
+
+Pain _n_ Median Min. Max. Q1 Q3 QD Z value _P_ value
+
+Before <span class="lx-highlight" data-idx="4" style="background-color:#FEF0C3;"><span class="lx-highlight" data-idx="5" style="background-color:#D2E3FC;">19</span></span> <span class="lx-highlight" data-idx="6" style="background-color:#C8E6C9;">6.00</span> 3.00 8.00 5.00 7.00 1 −3.864 &lt;.001
+
+After <span class="lx-highlight" data-idx="7" style="background-color:#FEF0C3;">19</span> 1.00 0.00 3.00 0.00 2.00 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**Figure 1:** Pre‑treatment and post‑treatment values of pain, aggravating factors,
+relieving factors and frequency of occurrence of symptoms. Pain ‑ Maximum
+score 10; Agg. fac. (aggravating factors) ‑ Maximum score 5; Rel. fac. (relieving
+factors) ‑ Maximum score <span class="lx-highlight" data-idx="8" style="background-color:#F9DEDC;">3</span>; Freq. (frequency) ‑ Depending on individual
+
+
+
+18 **International Journal of Yoga**  **Vol. 5**  **Jan-Jun-2012**
+
+
+Alagesan, _et al_ .: Yoga for inguinal hernia
+
+
+
+sleeping, lying down and sitting which were also asked
+for its presence.
+
+
+Out of nineteen subjects participated, seven showed the
+presence of one relieving factor, another seven showed
+the presence of two relieving factors and the remaining
+five showed the presence of al three relieving factors before
+intervention. All nineteen subjects showed the presence of
+all three relieving factors after intervention [Table 3, Figure 1].
+
+
+The z value of Wilcoxon signed‑rank test which is equal
+to 3.391 with _P_ &lt;0.001 denotes that there is statistically
+significant increase in relieving factors of inguinal hernia
+after intervention.
+
+
+**Frequency of occurrence**
+
+
+Frequency of occurrence of the hernia i.e. number of times
+in last two weeks were also analyzed before and after
+intervention. The median for frequency of occurrence
+before intervention is twelve times with range from nine
+to fourteen times per two weeks. Frequency of occurrence
+reduced from zero to six times with median of two times
+
+after practise of yoga.
+
+
+The z value of Wilcoxon signed‑rank test which is equal
+to−3.835 with _P_ value&lt;0.001 denotes that there is
+
+statistically significant reduction in frequency of occurrence
+of symptoms of hernia after intervention [Table 4, Figure 1].
+
+
+**DISCUSSION**
+
+
+This quasi‑experimental trial studied the effect of yoga
+therapy in subjects with reducible inguinal hernia. The
+result shows that yoga therapy is significantly effective
+in the management of reducible inguinal hernia in males.
+
+
+Taylor _et al_ ., concluded that surgical site infection after
+groin hernia repair is common and large clinical trials are
+required to determine whether the use of prophylactic
+antibiotics reduces the incidence of infection. [[4]]
+
+
+Kalliomaki _et al_ ., concludes that the possibility of
+long‑term pain as an outcome after hernia operations
+should be taken into consideration in the decision making
+prior to operation for hernia since in majority of patients
+pain in the operated groin interfered with daily activities. [[5]]
+
+
+Bay‑Nielsen, _et al_ ., concluded that one year after inguinal
+hernia repair pain is common and is associated with
+functional impairment in more than half of those with
+pain. The question of postoperative pain needs to be
+discussed with patients when considering surgical
+intervention for an inguinal hernia. [[6]]
+
+
+
+**Table 2:** Data analysis for aggravating factors before
+and after intervention
+
+|Agg. fac.|n|Median|Min.|Max.|QD|Z value|P value|
+|---|---|---|---|---|---|---|---|
+|Before&lt;br&gt;After|<span class="lx-highlight" data-idx="9" style="background-color:#D2E3FC;">19</span>&lt;br&gt;<span class="lx-highlight" data-idx="10" style="background-color:#FEF0C3;">19</span>|4.00&lt;br&gt;1.00|3.00&lt;br&gt;0.00|5.00&lt;br&gt;2.00|0.5&lt;br&gt;0|−3.875|&lt;.001|
+
+
+|Table 3: Data analysis for reliving fa after intervention|actor|s before|e and|
+|---|---|---|---|
+|Rel. fac.&lt;br&gt;_n_&lt;br&gt;Median Min. Max.&lt;br&gt;Q1&lt;br&gt;Q3|QD|Z value|_ P_ value|
+|Before&lt;br&gt;<span class="lx-highlight" data-idx="11" style="background-color:#D2E3FC;">19</span>&lt;br&gt;2.00&lt;br&gt;1.00 3.00 1.00 3.00|1|3.391|&lt;.001|
+|After&lt;br&gt;19&lt;br&gt;3.00&lt;br&gt;3.00 3.00 3.00 3.00|0|||
+|**Table 4:** Data analysis for frequency of occurrence of&lt;br&gt;hernial bulge before and after intervention&lt;br&gt;Freq.&lt;br&gt;_n_&lt;br&gt;Median Min. Max.&lt;br&gt;Q1&lt;br&gt;Q3&lt;br&gt;QD Z value_ P_value&lt;br&gt;Before 19&lt;br&gt;12.00&lt;br&gt;9.00 14.00 10.00 14.00&lt;br&gt;2&lt;br&gt;−3.835&lt;br&gt;&lt;.001|**Table 4:** Data analysis for frequency of occurrence of&lt;br&gt;hernial bulge before and after intervention&lt;br&gt;Freq.&lt;br&gt;_n_&lt;br&gt;Median Min. Max.&lt;br&gt;Q1&lt;br&gt;Q3&lt;br&gt;QD Z value_ P_value&lt;br&gt;Before 19&lt;br&gt;12.00&lt;br&gt;9.00 14.00 10.00 14.00&lt;br&gt;2&lt;br&gt;−3.835&lt;br&gt;&lt;.001|**Table 4:** Data analysis for frequency of occurrence of&lt;br&gt;hernial bulge before and after intervention&lt;br&gt;Freq.&lt;br&gt;_n_&lt;br&gt;Median Min. Max.&lt;br&gt;Q1&lt;br&gt;Q3&lt;br&gt;QD Z value_ P_value&lt;br&gt;Before <span class="lx-highlight" data-idx="12" style="background-color:#D2E3FC;">19</span>&lt;br&gt;12.00&lt;br&gt;9.00 14.00 10.00 14.00&lt;br&gt;2&lt;br&gt;−3.835&lt;br&gt;&lt;.001|**Table 4:** Data analysis for frequency of occurrence of&lt;br&gt;hernial bulge before and after intervention&lt;br&gt;Freq.&lt;br&gt;_n_&lt;br&gt;Median Min. Max.&lt;br&gt;Q1&lt;br&gt;Q3&lt;br&gt;QD Z value_ P_value&lt;br&gt;Before <span class="lx-highlight" data-idx="13" style="background-color:#FEF0C3;">19</span>&lt;br&gt;12.00&lt;br&gt;9.00 14.00 10.00 14.00&lt;br&gt;2&lt;br&gt;−3.835&lt;br&gt;&lt;.001|
+|After&lt;br&gt;19&lt;br&gt;2.00&lt;br&gt;0.00&lt;br&gt;6.00&lt;br&gt;1.00&lt;br&gt;3.00|1|||
+
+
+
+Bay‑Nielsen, _et al_ ., concluded that chronic pain is common
+after primary inguinal hernia repair in young males and
+there is no difference in the pain associated with open and
+non‑mesh repair. [[7]]
+
+
+The results of some studies [[4‑7]] explain the complications
+associated with surgical repair of hernia. So hernia can be
+better treated without surgery if it is not an acute health
+threat. Ancient health science will be much helpful, cost
+effective and can be used as an adjunct to physiotherapy
+or medical practise. The results of current study are also
+supported by the following articles.
+
+
+Millikan K and Deziel D concluded in their study on the
+cost‑effective management of hernia that exercises are
+more beneficial than any kind of modern surgery available
+for the management of hernia. When compared with cost
+effectiveness and complications, exercises are the best
+methods of treatment for hernia. [[9]]
+
+
+Yoga practices are very useful in reducing the symptoms
+of hernia such as heaviness, fullness and pain. Yoga can
+help only in early stage of hernia when it is just a small
+bulge and reducible. When it is irreducible and large, yoga
+cannot help. [[10]]
+
+
+Staff concluded in his article that, being diagnosed with
+a hernia does not mean the end to yoga practice. He also
+adds that a gentle yoga practice can help bring strength
+to the musculature where the hernia is occurring, thereby
+useful in reducing hernia. [[11]]
+
+
+Current study focuses on selected asanas only and it is further
+recommended to experiment with more number of asanas,
+pranayama, bandhas and mudras in large randomized
+sample with control group in more homogeneous sample
+including both sexes for long term follow‑up effects.
+
+
+
+**International Journal of Yoga**  **Vol. 5**  **Jan-Jun-2012** 19
+
+
+Alagesan, _et al_ .: Yoga for inguinal hernia
+
+
+
+**CONCLUSION**
+
+
+Yoga therapy with selected asanas is effective in the
+treatment of reversible inguinal hernia.
+
+
+**REFERENCES**
+
+
+1. Townsend Jr CM, Beauchamp RD, Evers BM, Mattox KL, Sabiston
+textbook of surgery the biological basis of modern surgical practice. 17 [th] ed.
+
+Philadelphia: Elsevier; 2004.
+
+
+2. First Exposure to General Surgery. In: Jacobs DO, editor. New York: The
+
+McGraw‑Hill Companies Inc; 2007.
+
+
+3. Russell RCG, Williams NS, Bulstrode CJ. Bailey and love’s short practice
+of surgery. 24 [th] ed. London: Hodder Arnold; 2004.
+
+
+4. Taylor EW, Duffy K, Lee K, Hill R, Noone A, Macintyre I, _et al_ . Surgical
+
+site infection after groin hernia repair. Br J Surg 2004;91:105‑11.
+
+
+5. Kalliomäki ML, Meyerson J, Gunnarsson U, Gordh T, Sandblom G. Long‑term
+
+pain after inguinal hernia repair in a population‑based cohort; risk factors and
+
+interference with daily activities, Eur J Pain 2008;12:214‑25.
+
+
+
+6. Bay‑Nielsen M, Perkins FM, Kehlet H, Pain and functional impairment one
+year after inguinal herniorrhaphy: A nationwide questionnaire study, The
+Danish Hernia Database. Ann Surg 2001;233:1‑7.
+
+
+7. Bay‑Nielsen M, Nilsson E, Nordin P, Kehlet H. Chronic pain after open
+mesh and sutured repair of direct inguinal hernia in young males. Br J Surg
+
+2004;91:1372‑6.
+
+
+8. Adler SS, Beckers D, Buck M. PNF in Practice‑An Illustrated Guide. 3 [rd] ed.
+
+Germany: Springer; 2008, p. 29.
+
+
+9. Millikan KW, Deziel DJ. The Management of Hernia‑Considerations in cost
+effectiveness. Surg Clin North Am 2005;76:105‑16.
+
+
+10. Dr. R. Nagarathna, Dean, Division of Yoga and Life‑sciences, SVYASA
+
+Available from http://www.healthandyoga.com/html/news/therapy/therapy85.
+asp [Last accessed on 2009 May 05].
+
+
+11. YJ Staff. Available from: http://www.yogajournal.com/practice/237 [Last
+accessed on 2009 May 05].
+
+
+**How to cite this article:** Alagesan J, Venkatachalam S, Ramadass A,
+Mani SB. Effect of yoga therapy in reversible inguinal hernia: A quasi
+experimental study. Int J Yoga 2012;5:16-20.
+
+**Source of Support:** Nil, **Conflict of Interest:** None declared
+
+
+
+
+
+
+
+20 **International Journal of Yoga**  **Vol. 5**  **Jan-Jun-2012**
+
+
+
+      </div>
+      <div class="lx-controls">
+        <div class="lx-button-row">
+          <button class="lx-control-btn" onclick="playPause()">▶️ Play</button>
+          <button class="lx-control-btn" onclick="prevExtraction()">⏮ Previous</button>
+          <button class="lx-control-btn" onclick="nextExtraction()">⏭ Next</button>
+        </div>
+        <div class="lx-progress-container">
+          <input type="range" id="progressSlider" class="lx-progress-slider"
+                 min="0" max="13" value="0"
+                 onchange="jumpToExtraction(this.value)">
+        </div>
+        <div class="lx-status-text">
+          Entity <span id="entityInfo">1/14</span> |
+          Pos <span id="posInfo">[4891-4893]</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function() {
+        const extractions = [{"index": 0, "class": "total_group_size", "text": "19", "color": "#FFDDBE", "startPos": 4891, "endPos": 4893, "beforeText": "illing inclusion\nand exclusion criteria and willing to participate in the\nresearch were recruited for the study. The total number of\nparticipants was ", "extractionText": "19", "afterText": ". All the subjects included in the study\nwere treated with yoga therapy for duration of 3 months.\n\n\n**Procedure**\n\n\nIndividuals who fulfilled the incl", "attributesHtml": "<div><strong>class:</strong> total_group_size</div><div><strong>attributes:</strong> {<span class=\"lx-attr-key\">Outcome</span>: <span class=\"lx-attr-value\">effective in the treatment of reversible inguinal hernia</span>}</div>"}, {"index": 1, "class": "treatment_duration", "text": "3 months", "color": "#EADDFF", "startPos": 4981, "endPos": 4989, "beforeText": "cruited for the study. The total number of\nparticipants was 19. All the subjects included in the study\nwere treated with yoga therapy for duration of ", "extractionText": "3 months", "afterText": ".\n\n\n**Procedure**\n\n\nIndividuals who fulfilled the inclusion criteria were\n\nselected for the study by consecutive sampling method after\nobtaining infor", "attributesHtml": "<div><strong>class:</strong> treatment_duration</div><div><strong>attributes:</strong> {<span class=\"lx-attr-key\">Outcome</span>: <span class=\"lx-attr-value\">Treatment duration</span>, <span class=\"lx-attr-key\">Value</span>: <span class=\"lx-attr-value\">3</span>, <span class=\"lx-attr-key\">Unit</span>: <span class=\"lx-attr-value\">months</span>}</div>"}, {"index": 2, "class": "treatment_duration", "text": "three months", "color": "#EADDFF", "startPos": 5728, "endPos": 5740, "beforeText": "th\nasanas in about two\u2011weeks duration. Later they practiced\nthe asanas at their home and follow up was once in a week.\nYoga therapy was continued for ", "extractionText": "three months", "afterText": " and post\nintervention assessment was taken.\n\n\nVajrasana, ushtrasana, paschimottanasana, pawanmuktasana,\nutthanpadasana, matsyasana and sarvangasana w", "attributesHtml": "<div><strong>class:</strong> treatment_duration</div><div><strong>attributes:</strong> {<span class=\"lx-attr-key\">Outcome</span>: <span class=\"lx-attr-value\">Treatment duration</span>, <span class=\"lx-attr-key\">Value</span>: <span class=\"lx-attr-value\">3</span>, <span class=\"lx-attr-key\">Unit</span>: <span class=\"lx-attr-value\">months</span>}</div>"}, {"index": 3, "class": "intervention_mean", "text": "1.00", "color": "#F9DEDC", "startPos": 10864, "endPos": 10865, "beforeText": "ion.\n\n\nAfter three months of intervention with selected yogasanas,\n14 subjects presented with the presence of two activities to\nincrease the problem, ", "extractionText": "1", "afterText": " presented with one activity and the\nremaining 4 subjects presented with no activity to increase\nthe problem out of the five commonly found activities", "attributesHtml": "<div><strong>class:</strong> intervention_mean</div><div><strong>attributes:</strong> {<span class=\"lx-attr-key\">Intervention</span>: <span class=\"lx-attr-value\">post-Yoga</span>, <span class=\"lx-attr-key\">Outcome</span>: <span class=\"lx-attr-value\">pain in reversible inguinal hernia</span>}</div>"}, {"index": 4, "class": "intervention_group_size", "text": "19", "color": "#FEF0C3", "startPos": 11473, "endPos": 11475, "beforeText": "inal pressure viz.\n\n\n**Table 1:** Data analysis for pain before and after\nintervention\n\n\nPain _n_ Median Min. Max. Q1 Q3 QD Z value _P_ value\n\nBefore ", "extractionText": "19", "afterText": " 6.00 3.00 8.00 5.00 7.00 1 \u22123.864 &lt;.001\n\nAfter 19 1.00 0.00 3.00 0.00 2.00 1\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n**Figure 1:** Pre\u2011treatment and post\u2011treatment values", "attributesHtml": "<div><strong>class:</strong> intervention_group_size</div><div><strong>attributes:</strong> {<span class=\"lx-attr-key\">Intervention</span>: <span class=\"lx-attr-value\">post-Yoga</span>, <span class=\"lx-attr-key\">Outcome</span>: <span class=\"lx-attr-value\">pain in reversible inguinal hernia</span>}</div>"}, {"index": 5, "class": "comparator_group_size", "text": "19", "color": "#D2E3FC", "startPos": 11473, "endPos": 11475, "beforeText": "inal pressure viz.\n\n\n**Table 1:** Data analysis for pain before and after\nintervention\n\n\nPain _n_ Median Min. Max. Q1 Q3 QD Z value _P_ value\n\nBefore ", "extractionText": "19", "afterText": " 6.00 3.00 8.00 5.00 7.00 1 \u22123.864 &lt;.001\n\nAfter 19 1.00 0.00 3.00 0.00 2.00 1\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n**Figure 1:** Pre\u2011treatment and post\u2011treatment values", "attributesHtml": "<div><strong>class:</strong> comparator_group_size</div><div><strong>attributes:</strong> {<span class=\"lx-attr-key\">Comparator</span>: <span class=\"lx-attr-value\">pre-Yoga</span>, <span class=\"lx-attr-key\">Outcome</span>: <span class=\"lx-attr-value\">pain in reversible inguinal hernia</span>}</div>"}, {"index": 6, "class": "comparator_mean", "text": "6.00", "color": "#C8E6C9", "startPos": 11476, "endPos": 11480, "beforeText": "l pressure viz.\n\n\n**Table 1:** Data analysis for pain before and after\nintervention\n\n\nPain _n_ Median Min. Max. Q1 Q3 QD Z value _P_ value\n\nBefore 19 ", "extractionText": "6.00", "afterText": " 3.00 8.00 5.00 7.00 1 \u22123.864 &lt;.001\n\nAfter 19 1.00 0.00 3.00 0.00 2.00 1\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n**Figure 1:** Pre\u2011treatment and post\u2011treatment values of p", "attributesHtml": "<div><strong>class:</strong> comparator_mean</div><div><strong>attributes:</strong> {<span class=\"lx-attr-key\">Comparator</span>: <span class=\"lx-attr-value\">pre-Yoga</span>, <span class=\"lx-attr-key\">Outcome</span>: <span class=\"lx-attr-value\">pain in reversible inguinal hernia</span>}</div>"}, {"index": 7, "class": "intervention_group_size", "text": "19", "color": "#FEF0C3", "startPos": 11523, "endPos": 11525, "beforeText": "r pain before and after\nintervention\n\n\nPain _n_ Median Min. Max. Q1 Q3 QD Z value _P_ value\n\nBefore 19 6.00 3.00 8.00 5.00 7.00 1 \u22123.864 &lt;.001\n\nAfter ", "extractionText": "19", "afterText": " 1.00 0.00 3.00 0.00 2.00 1\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n**Figure 1:** Pre\u2011treatment and post\u2011treatment values of pain, aggravating factors,\nrelieving factors a", "attributesHtml": "<div><strong>class:</strong> intervention_group_size</div><div><strong>attributes:</strong> {<span class=\"lx-attr-key\">Intervention</span>: <span class=\"lx-attr-value\">post-Yoga</span>, <span class=\"lx-attr-key\">Outcome</span>: <span class=\"lx-attr-value\">aggravating factors in reversible inguinal hernia</span>}</div>"}, {"index": 8, "class": "intervention_mean", "text": "3", "color": "#F9DEDC", "startPos": 11837, "endPos": 11838, "beforeText": " of occurrence of symptoms. Pain \u2011 Maximum\nscore 10; Agg. fac. (aggravating factors) \u2011 Maximum score 5; Rel. fac. (relieving\nfactors) \u2011 Maximum score ", "extractionText": "3", "afterText": "; Freq. (frequency) \u2011 Depending on individual\n\n\n\n18 **International Journal of Yoga** \uf097 **Vol. 5** \uf097 **Jan-Jun-2012**\n\n\nAlagesan, _et al_ .: Yoga for ", "attributesHtml": "<div><strong>class:</strong> intervention_mean</div><div><strong>attributes:</strong> {<span class=\"lx-attr-key\">Intervention</span>: <span class=\"lx-attr-value\">post-Yoga</span>, <span class=\"lx-attr-key\">Outcome</span>: <span class=\"lx-attr-value\">relieving factors in reversible inguinal hernia</span>}</div>"}, {"index": 9, "class": "comparator_group_size", "text": "19", "color": "#D2E3FC", "startPos": 14546, "endPos": 14548, "beforeText": "gravating factors before\nand after intervention\n\n|Agg. fac.|n|Median|Min.|Max.|QD|Z value|P value|\n|---|---|---|---|---|---|---|---|\n|Before&lt;br&gt;After|", "extractionText": "19", "afterText": "&lt;br&gt;19|4.00&lt;br&gt;1.00|3.00&lt;br&gt;0.00|5.00&lt;br&gt;2.00|0.5&lt;br&gt;0|\u22123.875|&lt;.001|\n\n\n|Table 3: Data analysis for reliving fa after intervention|actor|s before|e and", "attributesHtml": "<div><strong>class:</strong> comparator_group_size</div><div><strong>attributes:</strong> {<span class=\"lx-attr-key\">Comparator</span>: <span class=\"lx-attr-value\">pre-Yoga</span>, <span class=\"lx-attr-key\">Outcome</span>: <span class=\"lx-attr-value\">relieving factors in reversible inguinal hernia</span>}</div>"}, {"index": 10, "class": "intervention_group_size", "text": "19", "color": "#FEF0C3", "startPos": 14552, "endPos": 14554, "beforeText": "ing factors before\nand after intervention\n\n|Agg. fac.|n|Median|Min.|Max.|QD|Z value|P value|\n|---|---|---|---|---|---|---|---|\n|Before&lt;br&gt;After|19&lt;br&gt;", "extractionText": "19", "afterText": "|4.00&lt;br&gt;1.00|3.00&lt;br&gt;0.00|5.00&lt;br&gt;2.00|0.5&lt;br&gt;0|\u22123.875|&lt;.001|\n\n\n|Table 3: Data analysis for reliving fa after intervention|actor|s before|e and|\n|---", "attributesHtml": "<div><strong>class:</strong> intervention_group_size</div><div><strong>attributes:</strong> {<span class=\"lx-attr-key\">Intervention</span>: <span class=\"lx-attr-value\">post-Yoga</span>, <span class=\"lx-attr-key\">Outcome</span>: <span class=\"lx-attr-value\">relieving factors in reversible inguinal hernia</span>}</div>"}, {"index": 11, "class": "comparator_group_size", "text": "19", "color": "#D2E3FC", "startPos": 14802, "endPos": 14804, "beforeText": "ing fa after intervention|actor|s before|e and|\n|---|---|---|---|\n|Rel. fac.&lt;br&gt;_n_&lt;br&gt;Median Min. Max.&lt;br&gt;Q1&lt;br&gt;Q3|QD|Z value|_ P_ value|\n|Before&lt;br&gt;", "extractionText": "19", "afterText": "&lt;br&gt;2.00&lt;br&gt;1.00 3.00 1.00 3.00|1|3.391|&lt;.001|\n|After&lt;br&gt;19&lt;br&gt;3.00&lt;br&gt;3.00 3.00 3.00 3.00|0|||\n|**Table 4:** Data analysis for frequency of occurrenc", "attributesHtml": "<div><strong>class:</strong> comparator_group_size</div><div><strong>attributes:</strong> {<span class=\"lx-attr-key\">Comparator</span>: <span class=\"lx-attr-value\">pre-Yoga</span>, <span class=\"lx-attr-key\">Outcome</span>: <span class=\"lx-attr-value\">frequency of occurrence in reversible inguinal hernia</span>}</div>"}, {"index": 12, "class": "comparator_group_size", "text": "19", "color": "#D2E3FC", "startPos": 15583, "endPos": 15585, "beforeText": "ency of occurrence of&lt;br&gt;hernial bulge before and after intervention&lt;br&gt;Freq.&lt;br&gt;_n_&lt;br&gt;Median Min. Max.&lt;br&gt;Q1&lt;br&gt;Q3&lt;br&gt;QD Z value_ P_value&lt;br&gt;Before ", "extractionText": "19", "afterText": "&lt;br&gt;12.00&lt;br&gt;9.00 14.00 10.00 14.00&lt;br&gt;2&lt;br&gt;\u22123.835&lt;br&gt;&lt;.001|**Table 4:** Data analysis for frequency of occurrence of&lt;br&gt;hernial bulge before and afte", "attributesHtml": "<div><strong>class:</strong> comparator_group_size</div><div><strong>attributes:</strong> {<span class=\"lx-attr-key\">Comparator</span>: <span class=\"lx-attr-value\">pre-Yoga</span>, <span class=\"lx-attr-key\">Outcome</span>: <span class=\"lx-attr-value\">frequency of occurrence in reversible inguinal hernia</span>}</div>"}, {"index": 13, "class": "intervention_group_size", "text": "19", "color": "#FEF0C3", "startPos": 15831, "endPos": 15833, "beforeText": "ency of occurrence of&lt;br&gt;hernial bulge before and after intervention&lt;br&gt;Freq.&lt;br&gt;_n_&lt;br&gt;Median Min. Max.&lt;br&gt;Q1&lt;br&gt;Q3&lt;br&gt;QD Z value_ P_value&lt;br&gt;Before ", "extractionText": "19", "afterText": "&lt;br&gt;12.00&lt;br&gt;9.00 14.00 10.00 14.00&lt;br&gt;2&lt;br&gt;\u22123.835&lt;br&gt;&lt;.001|\n|After&lt;br&gt;19&lt;br&gt;2.00&lt;br&gt;0.00&lt;br&gt;6.00&lt;br&gt;1.00&lt;br&gt;3.00|1|||\n\n\n\nBay\u2011Nielsen, _et al_ ., conc", "attributesHtml": "<div><strong>class:</strong> intervention_group_size</div><div><strong>attributes:</strong> {<span class=\"lx-attr-key\">Intervention</span>: <span class=\"lx-attr-value\">post-Yoga</span>, <span class=\"lx-attr-key\">Outcome</span>: <span class=\"lx-attr-value\">frequency of occurrence in reversible inguinal hernia</span>}</div>"}];
+        let currentIndex = 0;
+        let isPlaying = false;
+        let animationInterval = null;
+        let animationSpeed = 1.0;
+
+        function updateDisplay() {
+          const extraction = extractions[currentIndex];
+          if (!extraction) return;
+
+          document.getElementById('attributesContainer').innerHTML = extraction.attributesHtml;
+          document.getElementById('entityInfo').textContent = (currentIndex + 1) + '/' + extractions.length;
+          document.getElementById('posInfo').textContent = '[' + extraction.startPos + '-' + extraction.endPos + ']';
+          document.getElementById('progressSlider').value = currentIndex;
+
+          const playBtn = document.querySelector('.lx-control-btn');
+          if (playBtn) playBtn.textContent = isPlaying ? '⏸ Pause' : '▶️ Play';
+
+          const prevHighlight = document.querySelector('.lx-text-window .lx-current-highlight');
+          if (prevHighlight) prevHighlight.classList.remove('lx-current-highlight');
+          const currentSpan = document.querySelector('.lx-text-window span[data-idx="' + currentIndex + '"]');
+          if (currentSpan) {
+            currentSpan.classList.add('lx-current-highlight');
+            currentSpan.scrollIntoView({block: 'center', behavior: 'smooth'});
+          }
+        }
+
+        function nextExtraction() {
+          currentIndex = (currentIndex + 1) % extractions.length;
+          updateDisplay();
+        }
+
+        function prevExtraction() {
+          currentIndex = (currentIndex - 1 + extractions.length) % extractions.length;
+          updateDisplay();
+        }
+
+        function jumpToExtraction(index) {
+          currentIndex = parseInt(index);
+          updateDisplay();
+        }
+
+        function playPause() {
+          if (isPlaying) {
+            clearInterval(animationInterval);
+            isPlaying = false;
+          } else {
+            animationInterval = setInterval(nextExtraction, animationSpeed * 1000);
+            isPlaying = true;
+          }
+          updateDisplay();
+        }
+
+        window.playPause = playPause;
+        window.nextExtraction = nextExtraction;
+        window.prevExtraction = prevExtraction;
+        window.jumpToExtraction = jumpToExtraction;
+
+        updateDisplay();
+      })();
+    </script>

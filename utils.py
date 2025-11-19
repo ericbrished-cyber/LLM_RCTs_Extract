@@ -200,3 +200,5 @@ def visualize(pmcid, output_dir, suffix=""):
     
     print(f"✔ Visualization written to: {os.path.abspath(out_html)}")
 
+
+visualize(3276927, output_dir="outputs")
