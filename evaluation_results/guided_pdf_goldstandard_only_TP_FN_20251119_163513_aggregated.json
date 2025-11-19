@@ -1,0 +1,16 @@
+{
+  "run_name": "guided_pdf_goldstandard_only_TP_FN",
+  "num_articles": 5,
+  "total_gold_facts": 60,
+  "total_pred_facts": 137,
+  "total_tp": 27,
+  "total_fp_in_gold": 13,
+  "total_fn": 33,
+  "total_extra_predictions": 67,
+  "macro_precision": 0.5885714285714286,
+  "macro_recall": 0.5125,
+  "macro_f1": 0.5430769230769231,
+  "micro_precision": 0.675,
+  "micro_recall": 0.45,
+  "micro_f1": 0.54
+}
