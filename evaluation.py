@@ -96,7 +96,7 @@ def build_gold_arm_facts(gold_path: str, pmcid: int):
             val = normalize_value(raw_val)
             if val is None:
                 continue
-
+            
             if role == "I":
                 arm = I_name
             else:
@@ -190,7 +190,7 @@ def print_mismatches(gold_facts, pred_facts):
             f"{role_label}={arm!r}, field={field!r}, value={value}"
         )
 
-    # False negatives: gold fact missing in predictions
+    # False negatives: gold fact missing in extractions
     if fn:
         print("\n" + "=" * 80)
         print("FALSE NEGATIVES (in gold, not predicted)")
@@ -198,10 +198,10 @@ def print_mismatches(gold_facts, pred_facts):
         for fact in sorted(fn):
             print("  ", fmt_fact(fact))
 
-    # False positives: predicted fact not in gold
+    # False positives: extracted fact not in gold
     if fp:
         print("\n" + "=" * 80)
-        print("FALSE POSITIVES (predicted, not in gold)")
+        print("FALSE POSITIVES (extracted, not in gold)")
         print("=" * 80)
         for fact in sorted(fp):
             print("  ", fmt_fact(fact))

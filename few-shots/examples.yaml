@@ -76,7 +76,7 @@ examples:
       Comparator: "WA"
       Outcome: "Fecal losses (g/kg/h)"
 
-- text: "A total of 220/339 (64.9%) patients experienced AEs during the on-therapy period (desvenlafaxine, 69/115 [60.0%]; fluoxetine, 72/112 [64.3%]; and placebo, 79/112 [70.5%])."
+- text: "A total of 220/339 (64.9 %) patients experienced AEs during the on-therapy period (desvenlafaxine, 69/115 [60.0%]; fluoxetine, 72/112 [64.3%]; and placebo, 79/112 [70.5 %])."
   extractions:
   # Desvenlafaxine arm
   - extraction_class: "intervention_events"
@@ -124,7 +124,7 @@ examples:
       Outcome: "Treatment-emergent adverse events (TEAEs)"
 
   - extraction_class: "comparator_rate"
-    extraction_text: "70.5%"
+    extraction_text: "70.5 %"
     attributes:
       Comparator: "placebo"
       Outcome: "Treatment-emergent adverse events (TEAEs)"
@@ -147,7 +147,7 @@ examples:
       Outcome: "Treatment-emergent adverse events (TEAEs)"
 
   - extraction_class: "total_rate"
-    extraction_text: "64.9%"
+    extraction_text: "64.9 %"
     attributes:
       Outcome: "Treatment-emergent adverse events (TEAEs)"
 

@@ -44,7 +44,7 @@ An arm-context is defined as:
 
   (Outcome) + (either Intervention or Comparator) + (any extra disambiguating attributes like Timepoint or Population)
 
-For each such arm-context and `extraction_class`, you may output **at most one** numeric value.
+For each such arm-context and `extraction_class`, you may output **at most z** numeric value.
 
 Examples:
 - For Outcome = "Treatment-emergent adverse events (TEAEs)" and Intervention = "desvenlafaxine",

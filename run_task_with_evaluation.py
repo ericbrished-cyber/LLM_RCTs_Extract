@@ -1,0 +1,381 @@
+import time
+import os
+from pathlib import Path
+from datetime import datetime
+
+from utils import (
+    get_xml, 
+    get_fulltext, 
+    list_pmcids, 
+    get_icos, 
+    get_prompt_all, 
+    get_prompt_guided,
+    get_fewshotexamples, 
+    visualize,
+)
+
+from spinner import Spinner
+from pdf_converter import convert_pdf_to_markdown
+from XML_from_PMC import download_pmc_xml
+from batch_evaluation import BatchEvaluator
+
+try:
+    import langextract as lx
+except Exception:
+    lx = None
+
+from dotenv import load_dotenv, find_dotenv
+
+# Load .env early
+load_dotenv(find_dotenv())
+
+# Directory setup
+pdf_folder = "data/PDF_test"
+markdown_folder = "data/Markdown"
+xml_folder = "data/XML_fulltext"
+output_folder = "./outputs"
+eval_folder = "./evaluation_results"
+
+os.makedirs(output_folder, exist_ok=True)
+os.makedirs(pdf_folder, exist_ok=True)
+os.makedirs(markdown_folder, exist_ok=True)
+os.makedirs(xml_folder, exist_ok=True)
+os.makedirs(eval_folder, exist_ok=True)
+
+
+def run_task_with_eval(
+    model="gemini-2.5-flash",
+    source_type="xml",  # "xml" or "pdf"
+    extraction_mode="all",  # "all" or "guided"
+    run_evaluation=True,
+    run_name=None,
+):
+    """
+    Run extraction task on PMC articles with optional batch evaluation.
+
+    Args:
+        model (str): Model identifier for langextract
+        source_type (str): "xml" for XML files, "pdf" for PDF->Markdown conversion
+        extraction_mode (str):
+            - "all": Extract all statistical information (no ICO guidance)
+            - "guided": Extract specific ICOs given in annotations
+        run_evaluation (bool): Whether to run evaluation after extraction
+        run_name (str): Name for this run (used in evaluation results)
+    """
+    pmcid_lst = list_pmcids(pdf_folder)
+    total = len(pmcid_lst)
+    
+    if lx is None:
+        raise ImportError(
+            "Missing dependency: 'langextract' is not installed. "
+            "Install project dependencies with: python -m pip install -r requirements.txt"
+        )
+    
+    # Generate run name if not provided
+    if run_name is None:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        run_name = f"{model}_{extraction_mode}_{source_type}_{timestamp}"
+    
+    # Suffix for output files
+    suffix = f"_{extraction_mode}_{source_type}"
+    
+    print("=" * 80)
+    print(f"EXTRACTION RUN: {run_name}")
+    print("=" * 80)
+    print(f"Model: {model}")
+    print(f"Source: {source_type.upper()}")
+    print(f"Mode: {extraction_mode}")
+    print(f"Articles: {total}")
+    print(f"Output: {os.path.abspath(output_folder)}")
+    print(f"Run evaluation: {run_evaluation}")
+    print("=" * 80)
+    print()
+
+    # Track statistics
+    stats = {
+        "total": total,
+        "processed": 0,
+        "successful": 0,
+        "failed": 0,
+        "skipped": 0,
+    }
+    failed_pmcids = []
+    
+    for i, pmcid in enumerate(pmcid_lst, 1):
+        # ===== STEP 1: Prepare input text =====
+        try:
+            if source_type == "xml":
+                input_text = get_xml(pmcid, xml_folder_path=xml_folder)
+                if input_text.startswith("XML file for PMCID"):
+                    print(
+                        f"[{i}/{total}] PMCID={pmcid} - XML not found, downloading.",
+                        flush=True,
+                    )
+                    xml_path = download_pmc_xml(pmcid, output_dir=xml_folder)
+                    if xml_path:
+                        input_text = get_xml(pmcid, xml_folder_path=xml_folder)
+                    else:
+                        print(
+                            f"[{i}/{total}] PMCID={pmcid} ✗ failed to download XML",
+                            flush=True,
+                        )
+                        stats["failed"] += 1
+                        failed_pmcids.append((pmcid, "XML download failed"))
+                        continue
+            
+            elif source_type == "pdf":
+                pdf_path = os.path.join(pdf_folder, f"{pmcid}.pdf")
+                if not os.path.exists(pdf_path):
+                    pdf_path = os.path.join(pdf_folder, f"PMCID{pmcid}.pdf")
+
+                if not os.path.exists(pdf_path):
+                    print(
+                        f"[{i}/{total}] PMCID={pmcid} ✗ PDF not found",
+                        flush=True,
+                    )
+                    stats["failed"] += 1
+                    failed_pmcids.append((pmcid, "PDF not found"))
+                    continue
+
+                md_path = os.path.join(markdown_folder, f"{pmcid}.md")
+                if not os.path.exists(md_path):
+                    print(
+                        f"[{i}/{total}] PMCID={pmcid} - Converting PDF to Markdown.",
+                        flush=True,
+                    )
+                    convert_pdf_to_markdown(pdf_path, output_dir=markdown_folder)
+
+                input_text = get_fulltext(pmcid, text_folder_path=markdown_folder)
+                if input_text.startswith("Markdown file for PMCID"):
+                    print(
+                        f"[{i}/{total}] PMCID={pmcid} ✗ markdown conversion failed",
+                        flush=True,
+                    )
+                    stats["failed"] += 1
+                    failed_pmcids.append((pmcid, "Markdown conversion failed"))
+                    continue
+            else:
+                raise ValueError(
+                    f"Invalid source_type: {source_type}. Use 'xml' or 'pdf'"
+                )
+
+        except Exception as e:
+            print(
+                f"[{i}/{total}] PMCID={pmcid} ✗ failed to prepare input: {e}",
+                flush=True,
+            )
+            stats["failed"] += 1
+            failed_pmcids.append((pmcid, f"Input preparation: {e}"))
+            continue
+
+        # ===== STEP 2: Prepare prompt and examples =====
+        if extraction_mode == "all":
+            prompt = get_prompt_all()
+            examples = get_fewshotexamples(xml=(source_type == "xml"))
+            mode_label = "all stats"
+
+        elif extraction_mode == "guided":
+            icos = get_icos(pmcid)
+            if not icos:
+                print(
+                    f"[{i}/{total}] PMCID={pmcid} ⚠ no ICOs in annotations, skipping",
+                    flush=True,
+                )
+                stats["skipped"] += 1
+                continue
+            
+            prompt = get_prompt_guided(pmcid)
+            examples = get_fewshotexamples(xml=(source_type == "xml"))
+            mode_label = f"guided ({len(icos)} ICOs)"
+
+        else:
+            raise ValueError(
+                f"Invalid extraction_mode: {extraction_mode}. Use 'all' or 'guided'"
+            )
+
+        # ===== STEP 3: Run extraction =====
+        label = f"[{i}/{total}] PMCID={pmcid} ({mode_label}) extracting…"
+
+        is_gpt5 = model.startswith("gpt-5") or model.startswith("gpt-4.2")
+        is_gemini = model.startswith("gemini")
+
+        extract_kwargs = {
+            "text_or_documents": input_text,
+            "prompt_description": prompt,
+            "examples": examples,
+            "model_id": model,
+            "extraction_passes": 1 if is_gemini else 2,
+            "max_workers": 1 if is_gemini else 10,
+        }
+
+        if is_gpt5:
+            extract_kwargs.update({
+                "fence_output": True,
+                "use_schema_constraints": False,
+            })
+        else:
+            extract_kwargs.update({
+                "fence_output": False,
+                "use_schema_constraints": True,
+            })
+        
+        try:
+            # Retry logic for quota errors
+            max_attempts = 3
+            extraction_successful = False
+            
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    with Spinner(label):
+                        result = lx.extract(**extract_kwargs)
+                    extraction_successful = True
+                    break
+                except Exception as e:
+                    msg = str(e)
+                    if "RESOURCE_EXHAUSTED" in msg or "429" in msg:
+                        wait = 60 * attempt
+                        print(
+                            f"[{i}/{total}] PMCID={pmcid} quota error (attempt {attempt}/{max_attempts}), waiting {wait}s…",
+                            flush=True,
+                        )
+                        time.sleep(wait)
+                        continue
+                    else:
+                        raise
+            
+            if not extraction_successful:
+                print(
+                    f"[{i}/{total}] PMCID={pmcid} ✗ failed after {max_attempts} attempts (quota)",
+                    flush=True,
+                )
+                stats["failed"] += 1
+                failed_pmcids.append((pmcid, "Quota exhausted"))
+                continue
+
+            print(
+                f"[{i}/{total}] PMCID={pmcid} ✓ extracted. Saving…",
+                flush=True,
+            )
+
+            output_name = f"{pmcid}{suffix}.jsonl"
+
+            lx.io.save_annotated_documents(
+                [result],
+                output_name=output_name,
+                output_dir=output_folder,
+            )
+            print(
+                f"[{i}/{total}] PMCID={pmcid} ✓ saved {output_name}",
+                flush=True,
+            )
+            
+            stats["processed"] += 1
+            stats["successful"] += 1
+
+        except KeyboardInterrupt:
+            print(
+                f"\n[{i}/{total}] PMCID={pmcid} ✗ interrupted by user.",
+                flush=True,
+            )
+            raise
+        except Exception as e:
+            print(
+                f"\n[{i}/{total}] PMCID={pmcid} ✗ failed: {e}",
+                flush=True,
+            )
+            stats["failed"] += 1
+            failed_pmcids.append((pmcid, str(e)))
+            continue
+
+        # ===== STEP 4: Visualize =====
+        try:
+            vis_dir = f"{output_folder}/visualization"
+            visualize(pmcid, output_dir=vis_dir, suffix=suffix)
+        except Exception as e:
+            print(
+                f"[{i}/{total}] PMCID={pmcid} ⚠ visualization failed: {e}",
+                flush=True,
+            )
+
+    # ===== Print extraction summary =====
+    print("\n" + "=" * 80)
+    print("EXTRACTION SUMMARY")
+    print("=" * 80)
+    print(f"Total articles: {stats['total']}")
+    print(f"Successfully processed: {stats['successful']}")
+    print(f"Failed: {stats['failed']}")
+    print(f"Skipped (no ICOs): {stats['skipped']}")
+    
+    if failed_pmcids:
+        print(f"\nFailed PMCIDs:")
+        for pmcid, reason in failed_pmcids:
+            print(f"  PMCID={pmcid}: {reason}")
+    
+    print("=" * 80)
+
+    # ===== Run evaluation if requested =====
+    if run_evaluation and stats["successful"] > 0:
+        print("\n" + "=" * 80)
+        print("RUNNING EVALUATION")
+        print("=" * 80)
+        
+        try:
+            evaluator = BatchEvaluator(
+                gold_path="gold-standard/annotated_rct_dataset.json",
+                output_dir=eval_folder
+            )
+            
+            results = evaluator.evaluate_directory(
+                predictions_dir=output_folder,
+                suffix_filter=suffix,
+                run_name=run_name
+            )
+            
+            return results
+            
+        except Exception as e:
+            print(f"✗ Evaluation failed: {e}")
+            return None
+    
+    elif run_evaluation and stats["successful"] == 0:
+        print("\n⚠ Skipping evaluation - no successful extractions")
+        return None
+    
+    return None
+
+
+def main():
+    """
+    Example usage with different configurations.
+    """
+    
+    # Example 1: Run guided PDF extraction with evaluation
+    run_task_with_eval(
+        model="gemini-2.5-flash",
+        source_type="pdf",
+        extraction_mode="guided",
+        run_evaluation=True,
+        run_name="gemini_guided_pdf_v1"
+    )
+    
+    # Example 2: Run guided XML extraction with evaluation
+    # run_task_with_eval(
+    #     model="gpt-5-mini",
+    #     source_type="xml",
+    #     extraction_mode="guided",
+    #     run_evaluation=True,
+    #     run_name="gpt5_guided_xml_v1"
+    # )
+    
+    # Example 3: Run all-stats extraction without immediate evaluation
+    # run_task_with_eval(
+    #     model="gemini-2.5-flash",
+    #     source_type="xml",
+    #     extraction_mode="all",
+    #     run_evaluation=False,
+    #     run_name="gemini_all_xml_v1"
+    # )
+
+
+if __name__ == "__main__":
+    main()
