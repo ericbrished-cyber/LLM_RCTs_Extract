@@ -157,31 +157,66 @@ def run_task(
         # ===== STEP 3: Run extraction =====
         label = f"[{i}/{total}] PMCID={pmcid} ({mode_label}) extracting…"
 
-        start_time = time.perf_counter()  # start clock
-        try:
-            
-            with Spinner(label):
-                result = lx.extract(
-                    text_or_documents=input_text,
-                    prompt_description=prompt,
-                    examples=examples,
-                    model_id=model,
-                    extraction_passes=3,
-                    max_char_buffer=500,
-                    batch_length = 20,
-                    max_workers=20,
-                    fence_output=True,       # Needed for OpenAI GPT-5 style models
-                    use_schema_constraints=False,  # Needed for OpenAI GPT-5 style models
-                ) #TRY RUNNING WITH LOWER REASONING EFFORT
-            elapsed = time.perf_counter() - start_time  # time taken
+        is_gpt5 = model.startswith("gpt-5") or model.startswith("gpt-4.2")
+        is_gemini = model.startswith("gemini")
 
-            # Success line
+        extract_kwargs = {
+            "text_or_documents": input_text,
+            "prompt_description": prompt,
+            "examples": examples,
+            "model_id": model,
+            "extraction_passes": 1 if is_gemini else 2,
+            # Free tier för Gemini tål inte många parallella anrop
+            "max_workers": 1 if is_gemini else 10,
+        }
+
+        if is_gpt5:
+            extract_kwargs.update(
+                {
+                    "fence_output": True,
+                    "use_schema_constraints": False,
+                }
+            )
+        else:
+            extract_kwargs.update(
+                {
+                    "fence_output": False,
+                    "use_schema_constraints": True,
+                }
+            )
+        try:
+            # Enkel retry vid kvotfel
+            max_attempts = 3
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    with Spinner(label):
+                        result = lx.extract(**extract_kwargs)
+                    break  # lyckades, lämna retry-loopen
+                except Exception as e:
+                    msg = str(e)
+                    if "RESOURCE_EXHAUSTED" in msg or "429" in msg:
+                        wait = 60 * attempt  # öka väntetiden vid varje försök
+                        print(
+                            f"[{i}/{total}] PMCID={pmcid} kvotproblem (försök {attempt}/{max_attempts}), väntar {wait} sekunder…",
+                            flush=True,
+                        )
+                        time.sleep(wait)
+                        continue
+                    else:
+                        # annat fel, kasta vidare
+                        raise
+            else:
+                print(
+                    f"[{i}/{total}] PMCID={pmcid} ✗ misslyckades efter {max_attempts} försök (kvotfel).",
+                    flush=True,
+                )
+                continue
+
             print(
-                f"[{i}/{total}] PMCID={pmcid} ✓ extracted in {elapsed:.2f} s. Saving…",
+                f"[{i}/{total}] PMCID={pmcid} ✓ extracted. Saving…",
                 flush=True,
             )
-            
-            # Save with descriptive filename
+
             suffix = f"_{extraction_mode}_{source_type}"
             output_name = f"{pmcid}{suffix}.jsonl"
 
@@ -190,8 +225,11 @@ def run_task(
                 output_name=output_name,
                 output_dir=output_folder,
             )
-            print(f"[{i}/{total}] PMCID={pmcid} ✓ saved {output_name}", flush=True)
-        
+            print(
+                f"[{i}/{total}] PMCID={pmcid} ✓ saved {output_name}",
+                flush=True,
+            )
+
         except KeyboardInterrupt:
             print(
                 f"\n[{i}/{total}] PMCID={pmcid} ✗ interrupted by user.",
@@ -199,17 +237,15 @@ def run_task(
             )
             raise
         except Exception as e:
-            # If extraction crashes, elapsed is still meaningful if start_time was set
-            elapsed = time.perf_counter() - start_time if "start_time" in locals() else 0.0
             print(
-                f"\n[{i}/{total}] PMCID={pmcid} ✗ failed after {elapsed:.2f} s: {e}",
+                f"\n[{i}/{total}] PMCID={pmcid} ✗ failed: {e}",
                 flush=True,
             )
-            continue  # skip visualization and move on to next PMCID
+            continue
 
         # ===== STEP 4: Visualize =====
         try:
-            visualize(pmcid, output_dir=output_folder, suffix=suffix)
+            visualize(pmcid, output_dir=f"{output_folder}/visualization", suffix=suffix)
         except Exception as e:
             print(
                 f"[{i}/{total}] PMCID={pmcid} ⚠ visualization failed: {e}",
@@ -228,4 +264,4 @@ if __name__ == "__main__":
     # run_task(model="gpt-5-mini", source_type="xml", extraction_mode="guided")
 
     # Extract specific ICOs from PDF
-            run_task(model="gpt-5-mini", source_type="pdf", extraction_mode="guided")
+    run_task(model="gemini-2.5-flash", source_type="pdf", extraction_mode="guided")
