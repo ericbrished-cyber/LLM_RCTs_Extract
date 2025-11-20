@@ -11,13 +11,13 @@ from utils import (
     get_prompt_all, 
     get_prompt_guided,
     get_fewshotexamples, 
-    visualize,
 )
 
 from spinner import Spinner
 from pdf_converter import convert_pdf_to_markdown
 from XML_from_PMC import download_pmc_xml
 from batch_evaluation import BatchEvaluator
+import langextract as lx
 
 try:
     import langextract as lx
@@ -33,10 +33,10 @@ load_dotenv(find_dotenv())
 pdf_folder = "data/PDF_test"
 markdown_folder = "data/Markdown"
 xml_folder = "data/XML_fulltext"
-output_folder = "./outputs"
+base_output_folder = "./outputs"
 eval_folder = "./evaluation_results"
 
-os.makedirs(output_folder, exist_ok=True)
+os.makedirs(base_output_folder, exist_ok=True)
 os.makedirs(pdf_folder, exist_ok=True)
 os.makedirs(markdown_folder, exist_ok=True)
 os.makedirs(xml_folder, exist_ok=True)
@@ -76,6 +76,12 @@ def run_task_with_eval(
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         run_name = f"{model}_{extraction_mode}_{source_type}_{timestamp}"
     
+    # Create run-specific folders
+    run_output_folder = os.path.join(base_output_folder, run_name)
+    run_viz_folder = os.path.join(run_output_folder, "visualization")
+    os.makedirs(run_output_folder, exist_ok=True)
+    os.makedirs(run_viz_folder, exist_ok=True)
+    
     # Suffix for output files
     suffix = f"_{extraction_mode}_{source_type}"
     
@@ -86,7 +92,8 @@ def run_task_with_eval(
     print(f"Source: {source_type.upper()}")
     print(f"Mode: {extraction_mode}")
     print(f"Articles: {total}")
-    print(f"Output: {os.path.abspath(output_folder)}")
+    print(f"Output folder: {os.path.abspath(run_output_folder)}")
+    print(f"Visualization folder: {os.path.abspath(run_viz_folder)}")
     print(f"Run evaluation: {run_evaluation}")
     print("=" * 80)
     print()
@@ -263,7 +270,7 @@ def run_task_with_eval(
             lx.io.save_annotated_documents(
                 [result],
                 output_name=output_name,
-                output_dir=output_folder,
+                output_dir=run_output_folder,
             )
             print(
                 f"[{i}/{total}] PMCID={pmcid} ✓ saved {output_name}",
@@ -290,8 +297,22 @@ def run_task_with_eval(
 
         # ===== STEP 4: Visualize =====
         try:
-            vis_dir = f"{output_folder}/visualization"
-            visualize(pmcid, output_dir=vis_dir, suffix=suffix)
+            # Visualize the file we just created
+            jsonl_path = os.path.join(run_output_folder, output_name)
+            html = lx.visualize(jsonl_path)
+            
+            # Save HTML to run-specific visualization folder
+            html_filename = f"visualization_{pmcid}{suffix}.html"
+            html_path = os.path.join(run_viz_folder, html_filename)
+            
+            with open(html_path, "w", encoding="utf-8") as f:
+                html_content = getattr(html, "data", html)
+                f.write(html_content)
+            
+            print(
+                f"[{i}/{total}] PMCID={pmcid} ✓ visualization saved",
+                flush=True,
+            )
         except Exception as e:
             print(
                 f"[{i}/{total}] PMCID={pmcid} ⚠ visualization failed: {e}",
@@ -327,7 +348,7 @@ def run_task_with_eval(
             )
             
             results = evaluator.evaluate_directory(
-                predictions_dir=output_folder,
+                predictions_dir=run_output_folder,
                 suffix_filter=suffix,
                 run_name=run_name
             )
@@ -351,30 +372,30 @@ def main():
     """
     
     # Example 1: Run guided PDF extraction with evaluation
-    # run_task_with_eval(
-    #     model="gemini-2.5-flash",
-    #     source_type="pdf",
-    #     extraction_mode="guided",
-    #     run_evaluation=True,
-    #     run_name="gemini_guided_pdf_v1"
-    # )
-    
-    #Example 2: Run guided pdf extraction with evaluation
     run_task_with_eval(
         model="gpt-5-mini",
         source_type="pdf",
         extraction_mode="guided",
         run_evaluation=True,
-        run_name="gpt5_guided_pdf_v1"
+        run_name="gpt5_mini_guided_pdf"
     )
+    
+    # Example 2: Run guided XML extraction with evaluation
+    # run_task_with_eval(
+    #     model="gpt-5-mini",
+    #     source_type="xml",
+    #     extraction_mode="guided",
+    #     run_evaluation=True,
+    #     run_name="gpt5_mini_guided_xml"
+    # )
     
     # Example 3: Run all-stats extraction without immediate evaluation
     # run_task_with_eval(
-    #     model="gemini-2.5-flash",
+    #     model="gemini-2.5-pro",
     #     source_type="xml",
     #     extraction_mode="all",
     #     run_evaluation=False,
-    #     run_name="gemini_all_xml_v1"
+    #     run_name="gemini_pro_all_xml"
     # )
 
 

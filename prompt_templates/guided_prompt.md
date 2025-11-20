@@ -14,16 +14,13 @@ Each ICO triplet is defined by `(Intervention, Comparator, Outcome)` (and option
 For **each such ICO triplet, and only these**:
 - **Continuous outcomes**  
   Extract (when reported):  
-  - `total_group_size`
   - `intervention_group_size`
   - `comparator_group_size`
   - `intervention_mean`
   - `comparator_mean`
-  - `total_mean`
   - `intervention_standard_deviation`
   - `comparator_standard_deviation`
-  - `total_standard_deviation`
-
+  
 - **Binary outcomes**
   Extract (when reported):
   - `intervention_group_size`
@@ -31,10 +28,8 @@ For **each such ICO triplet, and only these**:
   - `total_group_size`
   - `intervention_events`
   - `comparator_events`
-  - `total_events`
   - `intervention_rate`
   - `comparator_rate`
-  - `total_rate`
 
 ## Consistency & numeric rules (very important)
 
