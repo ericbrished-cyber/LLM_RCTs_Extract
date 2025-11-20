@@ -43,7 +43,7 @@ os.makedirs(xml_folder, exist_ok=True)
 os.makedirs(eval_folder, exist_ok=True)
 
 
-def run_task_with_eval(
+def run_lang_extract_with_eval(
     model="gemini-2.5-flash",
     source_type="xml",  # "xml" or "pdf"
     extraction_mode="all",  # "all" or "guided"

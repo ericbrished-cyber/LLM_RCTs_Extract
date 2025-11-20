@@ -199,6 +199,3 @@ def visualize(pmcid, output_dir, suffix=""):
         f.write(getattr(html, "data", html))  # handle Jupyter objects or plain str
     
     print(f"✔ Visualization written to: {os.path.abspath(out_html)}")
-
-
-visualize(3276927, output_dir="outputs")
