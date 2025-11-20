@@ -168,7 +168,7 @@ def get_prompt_guided(pmcid):
         print("No prompt template found!")
 
 
-def visualize(pmcid, output_dir, suffix=""):
+def visualize(pmcid, output_dir, suffix="", model: str = None, mode: str = None):
     """
     HTML-visualization of the Langextract output
     
@@ -193,7 +193,23 @@ def visualize(pmcid, output_dir, suffix=""):
     
     # Extract just the filename without extension for the output
     base_name = os.path.splitext(os.path.basename(path))[0]
-    out_html = os.path.join(output_dir, f"visualization_{base_name}.html")
+
+    # If caller provided model and mode (extraction_mode), prefer a compact
+    # filename: {pmcid}_{mode}_{model_family}.html (e.g. 4357072_guided_gemini.html)
+    if model and mode:
+        mlow = model.lower()
+        if mlow.startswith("gpt"):
+            model_family = "gpt"
+        elif mlow.startswith("gemini"):
+            model_family = "gemini"
+        else:
+            # sanitize other model names
+            model_family = re.sub(r"\W+", "-", mlow)
+
+        out_name = f"{pmcid}_{mode}_{model_family}.html"
+        out_html = os.path.join(output_dir, out_name)
+    else:
+        out_html = os.path.join(output_dir, f"visualization_{base_name}.html")
     
     with open(out_html, "w", encoding="utf-8") as f:
         f.write(getattr(html, "data", html))  # handle Jupyter objects or plain str
@@ -201,4 +217,6 @@ def visualize(pmcid, output_dir, suffix=""):
     print(f"✔ Visualization written to: {os.path.abspath(out_html)}")
 
 
-visualize(3276927, output_dir="outputs")
+    
+
+#visualize(4132222, output_dir="outputs")

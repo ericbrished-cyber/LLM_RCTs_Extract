@@ -12,6 +12,7 @@ from utils import (
     get_prompt_guided,
     get_fewshotexamples, 
     visualize,
+    
 )
 
 from spinner import Spinner
@@ -43,8 +44,9 @@ os.makedirs(xml_folder, exist_ok=True)
 os.makedirs(eval_folder, exist_ok=True)
 
 
+
 def run_task_with_eval(
-    model="gemini-2.5-flash",
+    model="gemini-2.5-flash", 
     source_type="xml",  # "xml" or "pdf"
     extraction_mode="all",  # "all" or "guided"
     run_evaluation=True,
@@ -205,8 +207,8 @@ def run_task_with_eval(
             "examples": examples,
             "model_id": model,
             "batch_length": 20,
-            "extraction_passes": 3,
-            "max_workers": 20,
+            "extraction_passes": 2,
+            "max_workers": 5,
         }
 
         if is_gpt5:
@@ -290,8 +292,11 @@ def run_task_with_eval(
 
         # ===== STEP 4: Visualize =====
         try:
-            vis_dir = f"{output_folder}/visualization"
-            visualize(pmcid, output_dir=vis_dir, suffix=suffix)
+            # Call the central visualize helper with the outputs folder so it can
+            # find the just-written JSONL and produce the HTML visualization.
+            # Pass model and extraction_mode so the visualization HTML is named
+            # like: {pmcid}_{mode}_{model_family}.html (e.g. 4357072_guided_gemini.html)
+            visualize(pmcid, output_dir=output_folder, suffix=suffix, model=model, mode=extraction_mode)
         except Exception as e:
             print(
                 f"[{i}/{total}] PMCID={pmcid} ⚠ visualization failed: {e}",
@@ -335,7 +340,7 @@ def run_task_with_eval(
             return results
             
         except Exception as e:
-            print(f"✗ Evaluation failed: {e}")
+            print(f"✗ Evaluation or dashboard generation failed: {e}")
             return None
     
     elif run_evaluation and stats["successful"] == 0:
@@ -361,11 +366,11 @@ def main():
     
     #Example 2: Run guided pdf extraction with evaluation
     run_task_with_eval(
-        model="gpt-5-mini",
+        model="gemini-2.5-flash",
         source_type="pdf",
         extraction_mode="guided",
         run_evaluation=True,
-        run_name="gpt5_guided_pdf_v1"
+        run_name="gemini_guided_pdf_v1"
     )
     
     # Example 3: Run all-stats extraction without immediate evaluation
