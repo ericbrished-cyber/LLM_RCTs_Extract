@@ -31,12 +31,10 @@ load_dotenv(find_dotenv())
 pdf_folder = "data/PDF_test"
 markdown_folder = "data/Markdown"
 base_output_folder = "./outputs"
-eval_folder = "./evaluation_results"
 
 os.makedirs(base_output_folder, exist_ok=True)
 os.makedirs(pdf_folder, exist_ok=True)
 os.makedirs(markdown_folder, exist_ok=True)
-os.makedirs(eval_folder, exist_ok=True)
     
 
 def run_lang_extract_with_eval(
@@ -67,26 +65,34 @@ def run_lang_extract_with_eval(
     
     # Generate run name if not provided
     if run_name is None:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        run_name = f"{model}_{extraction_mode}_{timestamp}"
+        # Sanitize model name for folder
+        model_clean = model.replace("-", "_").replace(".", "_")
+        run_name = f"LangExtract_{model_clean}_{extraction_mode}"
     
-    # Create run-specific folders
+    # Create run-specific folders with new structure
     run_output_folder = os.path.join(base_output_folder, run_name)
-    run_viz_folder = os.path.join(run_output_folder, "visualization")
+    extractions_folder = os.path.join(run_output_folder, "extractions")
+    visualizations_folder = os.path.join(run_output_folder, "visualizations")
+    evaluation_folder = os.path.join(run_output_folder, "evaluation")
+    
     os.makedirs(run_output_folder, exist_ok=True)
-    os.makedirs(run_viz_folder, exist_ok=True)
+    os.makedirs(extractions_folder, exist_ok=True)
+    os.makedirs(visualizations_folder, exist_ok=True)
+    os.makedirs(evaluation_folder, exist_ok=True)
     
     # Suffix for output files
     suffix = f"_{extraction_mode}"
     
     print("=" * 80)
-    print(f"EXTRACTION RUN: {run_name}")
+    print(f"LANGEXTRACT RUN: {run_name}")
     print("=" * 80)
     print(f"Model: {model}")
     print(f"Mode: {extraction_mode}")
     print(f"Articles: {total}")
     print(f"Output folder: {os.path.abspath(run_output_folder)}")
-    print(f"Visualization folder: {os.path.abspath(run_viz_folder)}")
+    print(f"  - Extractions: {os.path.abspath(extractions_folder)}")
+    print(f"  - Visualizations: {os.path.abspath(visualizations_folder)}")
+    print(f"  - Evaluation: {os.path.abspath(evaluation_folder)}")
     print(f"Run evaluation: {run_evaluation}")
     print("=" * 80)
     print()
@@ -117,27 +123,23 @@ def run_lang_extract_with_eval(
                     failed_pmcids.append((pmcid, "PDF not found"))
                     continue
 
-                md_path = os.path.join(markdown_folder, f"{pmcid}.md")
-                if not os.path.exists(md_path):
-                    print(
-                        f"[{i}/{total}] PMCID={pmcid} - Converting PDF to Markdown.",
-                        flush=True,
-                    )
-                    convert_pdf_to_markdown(pdf_path, output_dir=markdown_folder)
-
-                input_text = get_fulltext(pmcid, text_folder_path=markdown_folder)
-                if input_text.startswith("Markdown file for PMCID"):
-                    print(
-                        f"[{i}/{total}] PMCID={pmcid} ✗ markdown conversion failed",
-                        flush=True,
-                    )
-                    stats["failed"] += 1
-                    failed_pmcids.append((pmcid, "Markdown conversion failed"))
-                    continue
-            else:
-                raise ValueError(
-                    f"Invalid input text/document"
+            md_path = os.path.join(markdown_folder, f"{pmcid}.md")
+            if not os.path.exists(md_path):
+                print(
+                    f"[{i}/{total}] PMCID={pmcid} - Converting PDF to Markdown.",
+                    flush=True,
                 )
+                convert_pdf_to_markdown(pdf_path, output_dir=markdown_folder)
+
+            input_text = get_fulltext(pmcid, text_folder_path=markdown_folder)
+            if input_text.startswith("Markdown file for PMCID"):
+                print(
+                    f"[{i}/{total}] PMCID={pmcid} ✗ markdown conversion failed",
+                    flush=True,
+                )
+                stats["failed"] += 1
+                failed_pmcids.append((pmcid, "Markdown conversion failed"))
+                continue
 
         except Exception as e:
             print(
@@ -210,7 +212,7 @@ def run_lang_extract_with_eval(
             for attempt in range(1, max_attempts + 1):
                 try:
                     with Spinner(label):
-                        result = lx.extract(**extract_kwargs) #run acutal extraction
+                        result = lx.extract(**extract_kwargs) #run actual extraction
                     extraction_successful = True
                     break
                 except Exception as e:
@@ -242,13 +244,14 @@ def run_lang_extract_with_eval(
 
             output_name = f"{pmcid}{suffix}.jsonl"
 
+            # Save to extractions subfolder
             lx.io.save_annotated_documents(
                 [result],
                 output_name=output_name,
-                output_dir=run_output_folder,
+                output_dir=extractions_folder,
             )
             print(
-                f"[{i}/{total}] PMCID={pmcid} ✓ saved {output_name}",
+                f"[{i}/{total}] PMCID={pmcid} ✓ saved to extractions/{output_name}",
                 flush=True,
             )
             
@@ -272,11 +275,15 @@ def run_lang_extract_with_eval(
 
         # ===== STEP 4: Visualize =====
         try:
-                # Call the central visualize helper with the outputs folder so it can
-                # find the just-written JSONL and produce the HTML visualization.
-                # Pass model and extraction_mode so the visualization HTML is named
-                # like: {pmcid}_{mode}_{model_family}.html (e.g. 4357072_guided_gemini.html)
-            visualize(pmcid, output_dir=run_output_folder, suffix=suffix, model=model, mode=extraction_mode)
+            # Pass the extractions folder and visualizations folder
+            visualize(
+                pmcid, 
+                extractions_dir=extractions_folder,
+                visualizations_dir=visualizations_folder,
+                suffix=suffix, 
+                model=model, 
+                mode=extraction_mode
+            )
         except Exception as e:
             print(
                 f"[{i}/{total}] PMCID={pmcid} ⚠ visualization failed: {e}",
@@ -308,11 +315,11 @@ def run_lang_extract_with_eval(
         try:
             evaluator = BatchEvaluator(
                 gold_path="gold-standard/annotated_rct_dataset.json",
-                output_dir=eval_folder
+                output_dir=evaluation_folder
             )
             
             results = evaluator.evaluate_directory(
-                predictions_dir=run_output_folder,
+                predictions_dir=extractions_folder,  # Point to extractions subfolder
                 suffix_filter=suffix,
                 run_name=run_name
             )
@@ -320,7 +327,7 @@ def run_lang_extract_with_eval(
             return results
             
         except Exception as e:
-            print(f"✗ Evaluation or dashboard generation failed: {e}")
+            print(f"✗ Evaluation failed: {e}")
             return None
     
     elif run_evaluation and stats["successful"] == 0:
@@ -335,9 +342,9 @@ def main():
     Example usage with different configurations.
     """
     
-    # Example 1: Run guided PDF extraction with evaluation
+    # Example 1: Run guided extraction with evaluation
     run_lang_extract_with_eval(
-        model="gpt-5-mini",
+        model="gemini-2.5-flash",
         extraction_mode="guided",
         run_evaluation=True,
         run_name=None

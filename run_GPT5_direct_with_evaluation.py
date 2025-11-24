@@ -27,12 +27,10 @@ client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 pdf_folder = "data/PDF_test"
 markdown_folder = "data/Markdown"
 base_output_folder = "./outputs"
-eval_folder = "./evaluation_results"
 
 os.makedirs(base_output_folder, exist_ok=True)
 os.makedirs(pdf_folder, exist_ok=True)
 os.makedirs(markdown_folder, exist_ok=True)
-os.makedirs(eval_folder, exist_ok=True)
 
 
 # ---------------------- GPT-5 helpers ---------------------- #
@@ -119,8 +117,6 @@ def run_gpt5_extraction_pdf(
     return data
 
 
-
-
 # ---------------------- Main runner ---------------------- #
 
 def run_gpt5_with_eval(
@@ -132,7 +128,7 @@ def run_gpt5_with_eval(
     """
     Run GPT-5 extraction on PMC articles with optional batch evaluation.
     - Outputs:
-        ./outputs/<run_name>/<PMCID>_<extraction_mode>_<source_type>.jsonl
+        ./outputs/<run_name>/extractions/<PMCID>_<extraction_mode>.jsonl
       Each file has one line: {"pmcid": ..., "extractions": [...]}
     """
     pmcid_lst = list_pmcids(pdf_folder)
@@ -140,22 +136,30 @@ def run_gpt5_with_eval(
 
     # Generate run name if not provided
     if run_name is None:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        run_name = f"{model}_{extraction_mode}_{timestamp}"
+        # Sanitize model name for folder
+        model_clean = model.replace("-", "_").replace(".", "_")
+        run_name = f"GPT5Direct_{model_clean}_{extraction_mode}"
 
-    # Create run-specific output folder
+    # Create run-specific folders with new structure
     run_output_folder = os.path.join(base_output_folder, run_name)
+    extractions_folder = os.path.join(run_output_folder, "extractions")
+    evaluation_folder = os.path.join(run_output_folder, "evaluation")
+    
     os.makedirs(run_output_folder, exist_ok=True)
+    os.makedirs(extractions_folder, exist_ok=True)
+    os.makedirs(evaluation_folder, exist_ok=True)
 
     suffix = f"_{extraction_mode}"
 
     print("=" * 80)
-    print(f"GPT-5 EXTRACTION RUN: {run_name}")
+    print(f"GPT-5 DIRECT EXTRACTION RUN: {run_name}")
     print("=" * 80)
     print(f"Model: {model}")
     print(f"Mode: {extraction_mode}")
     print(f"Articles: {total}")
     print(f"Output folder: {os.path.abspath(run_output_folder)}")
+    print(f"  - Extractions: {os.path.abspath(extractions_folder)}")
+    print(f"  - Evaluation: {os.path.abspath(evaluation_folder)}")
     print(f"Run evaluation: {run_evaluation}")
     print("=" * 80)
     print()
@@ -169,21 +173,22 @@ def run_gpt5_with_eval(
     }
 
     failed_pmcids: List[Tuple[str, str]] = []
+    
     # ------------- Loop over PMCIDs ------------- #
     for i, pmcid in enumerate(pmcid_lst, 1):
         # ===== STEP 1: Prepare input (PDF) =====
         try:
-                # We will pass the PDF directly to GPT-5 (no markdown)
-                pdf_path = os.path.join(pdf_folder, f"{pmcid}.pdf")
+            # We will pass the PDF directly to GPT-5 (no markdown)
+            pdf_path = os.path.join(pdf_folder, f"{pmcid}.pdf")
 
-                if not os.path.exists(pdf_path):
-                    print(
-                        f"[{i}/{total}] PMCID={pmcid} ✗ PDF not found",
-                        flush=True,
-                    )
-                    stats["failed"] += 1
-                    failed_pmcids.append((pmcid, "PDF not found"))
-                    continue
+            if not os.path.exists(pdf_path):
+                print(
+                    f"[{i}/{total}] PMCID={pmcid} ✗ PDF not found",
+                    flush=True,
+                )
+                stats["failed"] += 1
+                failed_pmcids.append((pmcid, "PDF not found"))
+                continue
 
         except Exception as e:
             print(
@@ -195,7 +200,6 @@ def run_gpt5_with_eval(
             continue
 
         # ===== STEP 2: Prepare prompt =====
-
         prompt: str 
         if extraction_mode == "all":
             prompt = get_prompt_all()
@@ -230,11 +234,11 @@ def run_gpt5_with_eval(
             for attempt in range(1, max_attempts + 1):
                 try:
                     with Spinner(label):
-                            result = run_gpt5_extraction_pdf(
-                                pdf_path=pdf_path,
-                                prompt=prompt,
-                                model_name=model,
-                            )
+                        result = run_gpt5_extraction_pdf(
+                            pdf_path=pdf_path,
+                            prompt=prompt,
+                            model_name=model,
+                        )
                     extraction_successful = True
                     break
 
@@ -267,7 +271,7 @@ def run_gpt5_with_eval(
             )
 
             output_name = f"{pmcid}{suffix}.jsonl"
-            jsonl_path = os.path.join(run_output_folder, output_name)
+            jsonl_path = os.path.join(extractions_folder, output_name)
 
             # Save in the SAME JSONL format your evaluation expects
             out_doc = {
@@ -278,7 +282,7 @@ def run_gpt5_with_eval(
                 f.write(json.dumps(out_doc) + "\n")
 
             print(
-                f"[{i}/{total}] PMCID={pmcid} ✓ saved {output_name}",
+                f"[{i}/{total}] PMCID={pmcid} ✓ saved to extractions/{output_name}",
                 flush=True,
             )
 
@@ -325,12 +329,12 @@ def run_gpt5_with_eval(
         try:
             evaluator = BatchEvaluator(
                 gold_path="gold-standard/annotated_rct_dataset.json",
-                output_dir=eval_folder,
+                output_dir=evaluation_folder
             )
 
             results = evaluator.evaluate_directory(
-                predictions_dir=run_output_folder,
-                suffix_filter=suffix,   # matches "<pmcid><suffix>.jsonl"
+                predictions_dir=extractions_folder,  # Point to extractions subfolder
+                suffix_filter=suffix,
                 run_name=run_name,
             )
             return results
@@ -351,10 +355,10 @@ def main():
     Example: GPT-5 guided extraction directly from PDFs, with evaluation.
     """
     run_gpt5_with_eval(
-        model="gpt-5-mini",
-        extraction_mode="guided", # or "all"
+        model="gpt-5.1",
+        extraction_mode="guided",  # or "all"
         run_evaluation=True,
-        run_name="gpt5_direct_pdf_guided",
+        run_name=None
     )
 
 

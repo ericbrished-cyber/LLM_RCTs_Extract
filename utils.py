@@ -130,6 +130,7 @@ def get_prompt_guided(pmcid, gpt5_direct=False):
     
     Args:
         pmcid (int or str): The PMCID to get ICOs for
+        gpt5_direct (bool): Whether to use GPT5 direct prompt template
     
     Returns:
         str: Prompt instructing extraction of specific ICOs
@@ -163,27 +164,30 @@ def get_prompt_guided(pmcid, gpt5_direct=False):
         print("No prompt template found!")
 
 
-def visualize(pmcid, output_dir, suffix="", model: str = None, mode: str = None):
+def visualize(pmcid, extractions_dir, visualizations_dir, suffix="", model: str = None, mode: str = None):
     """
     HTML-visualization of the Langextract output
     
     Args:
         pmcid: The PMCID of the article
-        output_dir: Directory containing the JSONL files
-        suffix: Optional suffix added to the filename (e.g., "_all_xml")
+        extractions_dir: Directory containing the JSONL files
+        visualizations_dir: Directory to save visualization HTML files
+        suffix: Optional suffix added to the filename (e.g., "_guided")
+        model: Model name for naming the output file
+        mode: Extraction mode for naming the output file
     """
     
-    # 1) Try exact match with suffix
-    path = os.path.join(output_dir, f"{pmcid}{suffix}.jsonl")
+    # 1) Try exact match with suffix in extractions folder
+    path = os.path.join(extractions_dir, f"{pmcid}{suffix}.jsonl")
     
     # 2) If not found, try to find a close match
     if not os.path.exists(path):
-        matches = sorted(glob.glob(os.path.join(output_dir, f"{pmcid}.jsonl")))
+        matches = sorted(glob.glob(os.path.join(extractions_dir, f"{pmcid}.jsonl")))
         if not matches:
-            raise FileNotFoundError(f"No JSONL for PMCID={pmcid} in {output_dir}")
+            raise FileNotFoundError(f"No JSONL for PMCID={pmcid} in {extractions_dir}")
         path = matches[-1]  # pick the latest by name
     
-    # 3) Visualize and write HTML
+    # 3) Visualize
     html = lx.visualize(path)
     
     # Extract just the filename without extension for the output
@@ -202,9 +206,9 @@ def visualize(pmcid, output_dir, suffix="", model: str = None, mode: str = None)
             model_family = re.sub(r"\W+", "-", mlow)
 
         out_name = f"{pmcid}_{mode}_{model_family}.html"
-        out_html = os.path.join(output_dir, out_name)
+        out_html = os.path.join(visualizations_dir, out_name)
     else:
-        out_html = os.path.join(output_dir, f"visualization_{base_name}.html")
+        out_html = os.path.join(visualizations_dir, f"{base_name}_visualization.html")
     
     with open(out_html, "w", encoding="utf-8") as f:
         f.write(getattr(html, "data", html))  # handle Jupyter objects or plain str
@@ -214,7 +218,7 @@ def visualize(pmcid, output_dir, suffix="", model: str = None, mode: str = None)
 def get_pmcid_from_filename(path: str) -> int:
     """
     Extract PMCID as the first contiguous digit sequence in the filename.
-    E.g. '4132222_guided_pdf.jsonl' -> 4132222
+    E.g. '4132222_guided.jsonl' -> 4132222
     """
     name = Path(path).name
     digits = "".join(ch for ch in name if ch.isdigit())
