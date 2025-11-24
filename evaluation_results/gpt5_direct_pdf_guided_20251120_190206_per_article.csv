@@ -1,0 +1,7 @@
+pmcid,filename,gold_facts,pred_facts,tp,fp_in_gold,fn,extra_predictions,precision,recall,f1
+3214395,3214395_guided.jsonl,12,30,0,0,12,30,0.0,0.0,0.0
+3276927,3276927_guided.jsonl,12,12,12,0,0,0,1.0,1.0,1.0
+3496170,3496170_guided.jsonl,12,13,12,0,0,1,1.0,1.0,1.0
+3687098,3687098_guided.jsonl,16,16,8,8,8,0,0.5,0.5,0.5
+4132222,4132222_guided.jsonl,4,10,2,2,2,6,0.5,0.5,0.5
+5773985,5773985_guided.jsonl,16,36,8,0,8,28,1.0,0.5,0.6666666666666666

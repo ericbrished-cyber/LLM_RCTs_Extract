@@ -5,6 +5,10 @@ from pathlib import Path
 import re
 import langextract as lx
 import glob
+from typing import Any, Dict, Tuple
+import re
+
+
 
 with open('gold-standard/annotated_rct_dataset.json', 'r') as file:
         annotations = json.load(file)
@@ -132,7 +136,7 @@ def simplified_entry(entry):
     }
     return simplified_entry
 
-def get_prompt_guided(pmcid):
+def get_prompt_guided(pmcid, gpt5_direct=False):
     """
     Generate a prompt with specific ICOs to extract for a given PMCID.
     Uses the existing get_icos() function to retrieve annotations.
@@ -159,7 +163,11 @@ def get_prompt_guided(pmcid):
     icos_text = "\n\n".join(icos_list)
     
     # Load template and substitute ICOs
-    template_path = Path("prompt_templates/guided_prompt.md")
+    if gpt5_direct:
+        template_path = Path("prompt_templates/guided_prompt_GPT5_direct.md")
+    else:
+        template_path = Path("prompt_templates/guided_prompt.md")
+        
     if template_path.exists():
         template = template_path.read_text(encoding="utf-8")
         prompt = template.replace("{ico_list}", icos_text)
@@ -216,7 +224,13 @@ def visualize(pmcid, output_dir, suffix="", model: str = None, mode: str = None)
     
     print(f"✔ Visualization written to: {os.path.abspath(out_html)}")
 
-
-    
-
-#visualize(4132222, output_dir="outputs")
+def get_pmcid_from_filename(path: str) -> int:
+    """
+    Extract PMCID as the first contiguous digit sequence in the filename.
+    E.g. '4132222_guided_pdf.jsonl' -> 4132222
+    """
+    name = Path(path).name
+    digits = "".join(ch for ch in name if ch.isdigit())
+    if not digits:
+        raise ValueError(f"No digits (pmcid) in filename: {name}")
+    return int(digits)

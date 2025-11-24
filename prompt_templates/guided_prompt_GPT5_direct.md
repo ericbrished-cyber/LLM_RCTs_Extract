@@ -20,15 +20,15 @@ For **each such ICO triplet, and only these**:
   - `comparator_mean`
   - `intervention_standard_deviation`
   - `comparator_standard_deviation`
-
+  
 - **Binary outcomes**
   Extract (when reported):
   - `intervention_group_size`
   - `comparator_group_size`
   - `intervention_events`
   - `comparator_events`
-  - `intervention_rate`
-  - `comparator_rate`
+
+    If the binary outcome is presented as a rate, convert it using the group_size to events. 
 
 ## Consistency & numeric rules (very important)
 
@@ -42,7 +42,7 @@ For each such arm-context and `extraction_class`, you may output **at most 1** n
 
 Examples:
 - For Outcome = "Treatment-emergent adverse events (TEAEs)" and Intervention = "desvenlafaxine",
-  you may extract at most one `intervention_group_size`, one `intervention_events`, and one `intervention_rate`.
+  you may extract at most one `intervention_group_size`, one `intervention_events`, and one `intervention_events`.
 - For Outcome = "Mean body weight gain" and Comparator = "WA",
   you may extract at most one `comparator_mean` and one `comparator_standard_deviation`.
 

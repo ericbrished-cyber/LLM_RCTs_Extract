@@ -4,6 +4,8 @@ from typing import Any, Dict, Tuple
 import unicodedata
 import re
 
+from utils import get_pmcid_from_filename
+
 # =======================
 # Normalisation helpers
 # =======================
@@ -67,16 +69,7 @@ def normalize_value(v):
         return None
 
 
-def get_pmcid_from_filename(path: str) -> int:
-    """
-    Extract PMCID as the first contiguous digit sequence in the filename.
-    E.g. '4132222_guided_pdf.jsonl' -> 4132222
-    """
-    name = Path(path).name
-    digits = "".join(ch for ch in name if ch.isdigit())
-    if not digits:
-        raise ValueError(f"No digits (pmcid) in filename: {name}")
-    return int(digits)
+
 
 
 # =======================
@@ -415,6 +408,6 @@ def evaluate_file(extraction_file: str, gold_file: str):
 
 if __name__ == "__main__":
     # Adjust these paths to your setup
-    extraction_path = "outputs/gpt5_direct_pdf_guided/5773985_guided.jsonl"
+    extraction_path = "outputs/gpt5_direct_pdf_guided/3687098_guided.jsonl"
     gold_path = "gold-standard/annotated_rct_dataset.json"
     evaluate_file(extraction_path, gold_path)
