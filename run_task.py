@@ -14,7 +14,6 @@ run_lang_extract_with_eval(
 )
 
 # Run 2: LangExtract with GPT-5 Mini (guided mode)
-#from run_GPT5_direct_with_evaluation import run_gpt5_with_eval
 # run_lang_extract_with_eval(
 #     model="gpt-5-mini",
 #     extraction_mode="guided",
@@ -23,7 +22,6 @@ run_lang_extract_with_eval(
 # )
 
 # Run 3: GPT5 Direct (no LangExtract) with GPT-5.1 (guided mode)
-#from run_GPT5_direct_with_evaluation import run_gpt5_with_eval
 # run_gpt5_with_eval(
 #     model="gpt-5.1",
 #     extraction_mode="guided",

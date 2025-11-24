@@ -199,7 +199,7 @@ def run_lang_extract_with_eval(
         else:
             extract_kwargs.update({
                 "fence_output": True,
-                "use_schema_constraints": True,
+                "use_schema_constraints": False,
             })
         
         try:
