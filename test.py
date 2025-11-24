@@ -9,7 +9,6 @@ from pathlib import Path
 import json
 from utils import (
     list_pmcids,
-    get_xml,
     get_fulltext,
     get_icos,
     get_prompt_all,

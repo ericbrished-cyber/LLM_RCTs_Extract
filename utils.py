@@ -5,8 +5,9 @@ from pathlib import Path
 import re
 import langextract as lx
 import glob
-from typing import Any, Dict, Tuple
-import re
+#from typing import Any, Dict, Tuple
+#not used
+
 
 
 
@@ -111,7 +112,7 @@ def get_fewshotexamples(few_shots_folder="few-shots"):
 
     return examples
 
-
+#anv'nds, är vi säkra på att den används, hittar ej var /eric
 def simplified_entry(entry):
     simplified_entry = {
         "id": entry["id"],
