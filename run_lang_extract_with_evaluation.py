@@ -4,7 +4,6 @@ from pathlib import Path
 from datetime import datetime
 
 from utils import (
-    get_xml, 
     get_fulltext, 
     list_pmcids, 
     get_icos, 
@@ -16,7 +15,6 @@ from utils import (
 
 from spinner import Spinner
 from pdf_converter import convert_pdf_to_markdown
-from XML_from_PMC import download_pmc_xml
 from batch_evaluation import BatchEvaluator
 import langextract as lx
 
@@ -33,21 +31,18 @@ load_dotenv(find_dotenv())
 # Directory setup
 pdf_folder = "data/PDF_test"
 markdown_folder = "data/Markdown"
-xml_folder = "data/XML_fulltext"
 base_output_folder = "./outputs"
 eval_folder = "./evaluation_results"
 
 os.makedirs(base_output_folder, exist_ok=True)
 os.makedirs(pdf_folder, exist_ok=True)
 os.makedirs(markdown_folder, exist_ok=True)
-os.makedirs(xml_folder, exist_ok=True)
 os.makedirs(eval_folder, exist_ok=True)
 
 
 def run_lang_extract_with_eval(
     model="gemini-2.5-flash",
-    source_type="xml",  # "xml" or "pdf"
-    extraction_mode="all",  # "all" or "guided"
+    extraction_mode="guided",  # "all" or "guided"
     run_evaluation=True,
     run_name=None,
 ):
@@ -56,7 +51,6 @@ def run_lang_extract_with_eval(
 
     Args:
         model (str): Model identifier for langextract
-        source_type (str): "xml" for XML files, "pdf" for PDF->Markdown conversion
         extraction_mode (str):
             - "all": Extract all statistical information (no ICO guidance)
             - "guided": Extract specific ICOs given in annotations
@@ -75,7 +69,7 @@ def run_lang_extract_with_eval(
     # Generate run name if not provided
     if run_name is None:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        run_name = f"{model}_{extraction_mode}_{source_type}_{timestamp}"
+        run_name = f"{model}_{extraction_mode}_{timestamp}"
     
     # Create run-specific folders
     run_output_folder = os.path.join(base_output_folder, run_name)
@@ -84,13 +78,12 @@ def run_lang_extract_with_eval(
     os.makedirs(run_viz_folder, exist_ok=True)
     
     # Suffix for output files
-    suffix = f"_{extraction_mode}_{source_type}"
+    suffix = f"_{extraction_mode}"
     
     print("=" * 80)
     print(f"EXTRACTION RUN: {run_name}")
     print("=" * 80)
     print(f"Model: {model}")
-    print(f"Source: {source_type.upper()}")
     print(f"Mode: {extraction_mode}")
     print(f"Articles: {total}")
     print(f"Output folder: {os.path.abspath(run_output_folder)}")
@@ -144,7 +137,7 @@ def run_lang_extract_with_eval(
                     continue
             else:
                 raise ValueError(
-                    f"Invalid source_type: {source_type}. Use 'xml' or 'pdf'"
+                    f"Invalid input text/document"
                 )
 
         except Exception as e:
@@ -159,7 +152,7 @@ def run_lang_extract_with_eval(
         # ===== STEP 2: Prepare prompt and examples =====
         if extraction_mode == "all":
             prompt = get_prompt_all()
-            examples = get_fewshotexamples(xml=(source_type == "xml"))
+            examples = get_fewshotexamples()
             mode_label = "all stats"
 
         elif extraction_mode == "guided":
@@ -346,29 +339,10 @@ def main():
     # Example 1: Run guided PDF extraction with evaluation
     run_lang_extract_with_eval(
         model="gpt-5-mini",
-        source_type="pdf",
         extraction_mode="guided",
         run_evaluation=True,
         run_name=None
     )
-    
-    # Example 2: Run guided XML extraction with evaluation
-    # run_task_with_eval(
-    #     model="gpt-5-mini",
-    #     source_type="xml",
-    #     extraction_mode="guided",
-    #     run_evaluation=True,
-    #     run_name="gpt5_mini_guided_xml"
-    # )
-    
-    # Example 3: Run all-stats extraction without immediate evaluation
-    # run_task_with_eval(
-    #     model="gemini-2.5-pro",
-    #     source_type="xml",
-    #     extraction_mode="all",
-    #     run_evaluation=False,
-    #     run_name="gemini_pro_all_xml"
-    # )
 
 
 if __name__ == "__main__":

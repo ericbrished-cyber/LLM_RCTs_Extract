@@ -63,20 +63,8 @@ def get_fulltext(pmcid, text_folder_path="data/Markdown"):
     else:
         return f"Markdown file for PMCID {pmcid} not found in {text_folder_path}."
 
-
-
-
-def get_xml(pmcid, xml_folder_path="data/XML"):
-    xml_file_path = os.path.join(xml_folder_path, f"PMC{pmcid}.xml")
-
-    if os.path.exists(xml_file_path):
-        with open(xml_file_path, "r", encoding="utf-8") as xml_file:
-            return xml_file.read()
-    else:
-        return f"XML file for PMCID {pmcid} not found in {xml_folder_path}."
-
 def _build_char_interval(item):
-    """Create a CharInterval from a YAML dict if present."""
+    """Create a CharInterval from a YAML dict if present. To be used in lang extract few shot examples"""
     ci = item.get("char_interval")
     if not ci:
         return None
@@ -85,15 +73,14 @@ def _build_char_interval(item):
         end_pos=ci["end_pos"],
     )
 
-
-def get_fewshotexamples(few_shots_folder="few-shots", xml=False):
+def get_fewshotexamples(few_shots_folder="few-shots"):
     """
     Load few-shot examples from a YAML file and convert them to LangExtract ExampleData.
 
     If `xml` is True, loads `examples_XML.yaml`, otherwise `examples.yaml`.
     """
     few_shots_folder = Path(few_shots_folder)
-    yaml_filename = "examples_XML.yaml" if xml else "examples.yaml"
+    yaml_filename = "examples.yaml"
     yaml_file = few_shots_folder / yaml_filename
 
     with yaml_file.open("r", encoding="utf-8") as f:

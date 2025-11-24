@@ -9,7 +9,6 @@ from dotenv import load_dotenv, find_dotenv
 from openai import OpenAI
 
 from utils import (
-    get_xml,
     get_fulltext,
     list_pmcids,
     get_icos,
@@ -17,7 +16,6 @@ from utils import (
     get_prompt_guided,
 )
 from spinner import Spinner
-from XML_from_PMC import download_pmc_xml
 from batch_evaluation import BatchEvaluator
 
 # ---------------------- Setup ---------------------- #
@@ -28,14 +26,12 @@ client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 pdf_folder = "data/PDF_test"
 markdown_folder = "data/Markdown"
-xml_folder = "data/XML_fulltext"
 base_output_folder = "./outputs"
 eval_folder = "./evaluation_results"
 
 os.makedirs(base_output_folder, exist_ok=True)
 os.makedirs(pdf_folder, exist_ok=True)
 os.makedirs(markdown_folder, exist_ok=True)
-os.makedirs(xml_folder, exist_ok=True)
 os.makedirs(eval_folder, exist_ok=True)
 
 
@@ -135,9 +131,6 @@ def run_gpt5_with_eval(
 ):
     """
     Run GPT-5 extraction on PMC articles with optional batch evaluation.
-
-    - For source_type="pdf": pass the PDF directly to GPT-5 via input_file.
-    - For source_type="xml": pass plain text from XML.
     - Outputs:
         ./outputs/<run_name>/<PMCID>_<extraction_mode>_<source_type>.jsonl
       Each file has one line: {"pmcid": ..., "extractions": [...]}
@@ -174,8 +167,8 @@ def run_gpt5_with_eval(
         "failed": 0,
         "skipped": 0,
     }
-    failed_pmcids: List[Tuple[int, str]] = []
 
+    failed_pmcids: List[Tuple[str, str]] = []
     # ------------- Loop over PMCIDs ------------- #
     for i, pmcid in enumerate(pmcid_lst, 1):
         # ===== STEP 1: Prepare input (PDF) =====
@@ -202,6 +195,8 @@ def run_gpt5_with_eval(
             continue
 
         # ===== STEP 2: Prepare prompt =====
+
+        prompt: str 
         if extraction_mode == "all":
             prompt = get_prompt_all()
             mode_label = "all stats"
