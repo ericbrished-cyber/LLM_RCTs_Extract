@@ -216,7 +216,7 @@ def run_gpt5_with_eval(
                 stats["skipped"] += 1
                 continue
 
-            prompt = get_prompt_guided(pmcid)
+            prompt = get_prompt_guided(pmcid, gpt5_direct=True)
             mode_label = f"guided ({len(icos)} ICOs)"
 
         else:
