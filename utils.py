@@ -191,7 +191,7 @@ def visualize(pmcid, output_dir, suffix="", model: str = None, mode: str = None)
     
     # 2) If not found, try to find a close match
     if not os.path.exists(path):
-        matches = sorted(glob.glob(os.path.join(output_dir, f"*{pmcid}*.jsonl")))
+        matches = sorted(glob.glob(os.path.join(output_dir, f"{pmcid}.jsonl")))
         if not matches:
             raise FileNotFoundError(f"No JSONL for PMCID={pmcid} in {output_dir}")
         path = matches[-1]  # pick the latest by name
