@@ -227,5 +227,25 @@ def get_pmcid_from_filename(path: str) -> int:
         raise ValueError(f"No digits (pmcid) in filename: {name}")
     return int(digits)
 
-def get_events_from_rate():
-    
+
+def get_events_from_rate(event_rate, n):
+    """
+    Estimate number of events from an event rate and sample size.
+
+    Args:
+        event_rate (float|int|str): event rate as proportion (0-1) or percentage (0-100).
+        n (int): sample size.
+
+    Returns:
+        int: estimated number of events (rounded), or None if inputs are invalid.
+    """
+    if event_rate is None or n is None:
+        return None
+    try:
+        rate = float(event_rate)
+    except (TypeError, ValueError):
+        raise ValueError(f"Invalid event_rate: {event_rate}")
+    # treat values > 1 as percentages (e.g., 25 -> 0.25)
+    if rate > 1:
+        rate = rate / 100.0
+    return int(round(rate * int(n)))
