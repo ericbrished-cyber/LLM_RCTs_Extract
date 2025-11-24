@@ -16,7 +16,6 @@ from utils import (
 from spinner import Spinner
 from pdf_converter import convert_pdf_to_markdown
 from batch_evaluation import BatchEvaluator
-import langextract as lx
 
 try:
     import langextract as lx
@@ -38,11 +37,11 @@ os.makedirs(base_output_folder, exist_ok=True)
 os.makedirs(pdf_folder, exist_ok=True)
 os.makedirs(markdown_folder, exist_ok=True)
 os.makedirs(eval_folder, exist_ok=True)
-
+    
 
 def run_lang_extract_with_eval(
     model="gemini-2.5-flash",
-    extraction_mode="guided",  # "all" or "guided"
+    extraction_mode="all",  # "all" or "guided"
     run_evaluation=True,
     run_name=None,
 ):
@@ -186,8 +185,8 @@ def run_lang_extract_with_eval(
             "examples": examples,
             "model_id": model,
             "batch_length": 20,
-            "extraction_passes": 3,
-            "max_workers": 20,
+            "extraction_passes": 2,
+            "max_workers": 5,
         }
 
         if is_gpt:
@@ -321,7 +320,7 @@ def run_lang_extract_with_eval(
             return results
             
         except Exception as e:
-            print(f"✗ Evaluation failed: {e}")
+            print(f"✗ Evaluation or dashboard generation failed: {e}")
             return None
     
     elif run_evaluation and stats["successful"] == 0:

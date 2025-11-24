@@ -1,0 +1,16 @@
+{
+  "run_name": "gemini_guided_pdf_v1",
+  "num_articles": 6,
+  "total_gold_facts": 72,
+  "total_pred_facts": 139,
+  "total_tp": 28,
+  "total_fp_in_gold": 16,
+  "total_fn": 44,
+  "total_extra_predictions": 68,
+  "macro_precision": 0.45476190476190476,
+  "macro_recall": 0.34027777777777773,
+  "macro_f1": 0.3858974358974359,
+  "micro_precision": 0.6363636363636364,
+  "micro_recall": 0.3888888888888889,
+  "micro_f1": 0.4827586206896552
+}
