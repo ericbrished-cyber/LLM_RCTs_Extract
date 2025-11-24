@@ -415,6 +415,6 @@ def evaluate_file(extraction_file: str, gold_file: str):
 
 if __name__ == "__main__":
     # Adjust these paths to your setup
-    extraction_path = "outputs/gpt5_direct_pdf_guided/5773985_guided.jsonl"
+    extraction_path = "outputs/gpt5_direct_pdf_guided/3214395_guided.jsonl"
     gold_path = "gold-standard/annotated_rct_dataset.json"
     evaluate_file(extraction_path, gold_path)
