@@ -176,7 +176,7 @@ def get_prompt_guided(pmcid, gpt5_direct=False):
         print("No prompt template found!")
 
 
-def visualize(pmcid, output_dir, suffix=""):
+def visualize(pmcid, output_dir, suffix="", model: str = None, mode: str = None):
     """
     HTML-visualization of the Langextract output
     
@@ -191,7 +191,7 @@ def visualize(pmcid, output_dir, suffix=""):
     
     # 2) If not found, try to find a close match
     if not os.path.exists(path):
-        matches = sorted(glob.glob(os.path.join(output_dir, f"*{pmcid}*.jsonl")))
+        matches = sorted(glob.glob(os.path.join(output_dir, f"{pmcid}.jsonl")))
         if not matches:
             raise FileNotFoundError(f"No JSONL for PMCID={pmcid} in {output_dir}")
         path = matches[-1]  # pick the latest by name
@@ -201,7 +201,23 @@ def visualize(pmcid, output_dir, suffix=""):
     
     # Extract just the filename without extension for the output
     base_name = os.path.splitext(os.path.basename(path))[0]
-    out_html = os.path.join(output_dir, f"visualization_{base_name}.html")
+
+    # If caller provided model and mode (extraction_mode), prefer a compact
+    # filename: {pmcid}_{mode}_{model_family}.html (e.g. 4357072_guided_gemini.html)
+    if model and mode:
+        mlow = model.lower()
+        if mlow.startswith("gpt"):
+            model_family = "gpt"
+        elif mlow.startswith("gemini"):
+            model_family = "gemini"
+        else:
+            # sanitize other model names
+            model_family = re.sub(r"\W+", "-", mlow)
+
+        out_name = f"{pmcid}_{mode}_{model_family}.html"
+        out_html = os.path.join(output_dir, out_name)
+    else:
+        out_html = os.path.join(output_dir, f"visualization_{base_name}.html")
     
     with open(out_html, "w", encoding="utf-8") as f:
         f.write(getattr(html, "data", html))  # handle Jupyter objects or plain str

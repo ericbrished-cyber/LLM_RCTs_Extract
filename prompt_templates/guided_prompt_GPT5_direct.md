@@ -28,7 +28,10 @@ For **each such ICO triplet, and only these**:
   - `intervention_events`
   - `comparator_events`
 
-    If the binary outcome is presented as a rate, convert it using the group_size to events. 
+  **Inferring events from rate and group_size**  
+  If only rate (%) and `group_size` = *n* are reported, infer events as:  
+  `events = round((rate / 100) * n)`  
+  Ensure `0 ≤ events ≤ n`, and keep the original reported rate as `*_rate`.
 
 ## Consistency & numeric rules (very important)
 

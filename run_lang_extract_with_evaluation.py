@@ -11,6 +11,7 @@ from utils import (
     get_prompt_all, 
     get_prompt_guided,
     get_fewshotexamples, 
+    visualize
 )
 
 from spinner import Spinner
@@ -111,29 +112,9 @@ def run_lang_extract_with_eval(
     for i, pmcid in enumerate(pmcid_lst, 1):
         # ===== STEP 1: Prepare input text =====
         try:
-            if source_type == "xml":
-                input_text = get_xml(pmcid, xml_folder_path=xml_folder)
-                if input_text.startswith("XML file for PMCID"):
-                    print(
-                        f"[{i}/{total}] PMCID={pmcid} - XML not found, downloading.",
-                        flush=True,
-                    )
-                    xml_path = download_pmc_xml(pmcid, output_dir=xml_folder)
-                    if xml_path:
-                        input_text = get_xml(pmcid, xml_folder_path=xml_folder)
-                    else:
-                        print(
-                            f"[{i}/{total}] PMCID={pmcid} ✗ failed to download XML",
-                            flush=True,
-                        )
-                        stats["failed"] += 1
-                        failed_pmcids.append((pmcid, "XML download failed"))
-                        continue
-            
-            elif source_type == "pdf":
-                pdf_path = os.path.join(pdf_folder, f"{pmcid}.pdf")
-                if not os.path.exists(pdf_path):
-                    pdf_path = os.path.join(pdf_folder, f"PMCID{pmcid}.pdf")
+            pdf_path = os.path.join(pdf_folder, f"{pmcid}.pdf")
+            if not os.path.exists(pdf_path):
+                pdf_path = os.path.join(pdf_folder, f"PMCID{pmcid}.pdf")
 
                 if not os.path.exists(pdf_path):
                     print(
@@ -192,7 +173,7 @@ def run_lang_extract_with_eval(
                 continue
             
             prompt = get_prompt_guided(pmcid)
-            examples = get_fewshotexamples(xml=(source_type == "xml"))
+            examples = get_fewshotexamples()
             mode_label = f"guided ({len(icos)} ICOs)"
 
         else:
@@ -203,7 +184,7 @@ def run_lang_extract_with_eval(
         # ===== STEP 3: Run extraction =====
         label = f"[{i}/{total}] PMCID={pmcid} ({mode_label}) extracting…"
 
-        is_gpt5 = model.startswith("gpt-5") or model.startswith("gpt-4.2")
+        is_gpt = model.startswith("gpt")
         is_gemini = model.startswith("gemini")
 
         extract_kwargs = {
@@ -216,14 +197,14 @@ def run_lang_extract_with_eval(
             "max_workers": 20,
         }
 
-        if is_gpt5:
+        if is_gpt:
             extract_kwargs.update({
                 "fence_output": True,
                 "use_schema_constraints": False,
             })
         else:
             extract_kwargs.update({
-                "fence_output": False,
+                "fence_output": True,
                 "use_schema_constraints": True,
             })
         
@@ -232,10 +213,12 @@ def run_lang_extract_with_eval(
             max_attempts = 3
             extraction_successful = False
             
+            result = None
+
             for attempt in range(1, max_attempts + 1):
                 try:
                     with Spinner(label):
-                        result = lx.extract(**extract_kwargs)
+                        result = lx.extract(**extract_kwargs) #run acutal extraction
                     extraction_successful = True
                     break
                 except Exception as e:
@@ -297,22 +280,11 @@ def run_lang_extract_with_eval(
 
         # ===== STEP 4: Visualize =====
         try:
-            # Visualize the file we just created
-            jsonl_path = os.path.join(run_output_folder, output_name)
-            html = lx.visualize(jsonl_path)
-            
-            # Save HTML to run-specific visualization folder
-            html_filename = f"visualization_{pmcid}{suffix}.html"
-            html_path = os.path.join(run_viz_folder, html_filename)
-            
-            with open(html_path, "w", encoding="utf-8") as f:
-                html_content = getattr(html, "data", html)
-                f.write(html_content)
-            
-            print(
-                f"[{i}/{total}] PMCID={pmcid} ✓ visualization saved",
-                flush=True,
-            )
+                # Call the central visualize helper with the outputs folder so it can
+                # find the just-written JSONL and produce the HTML visualization.
+                # Pass model and extraction_mode so the visualization HTML is named
+                # like: {pmcid}_{mode}_{model_family}.html (e.g. 4357072_guided_gemini.html)
+            visualize(pmcid, output_dir=run_output_folder, suffix=suffix, model=model, mode=extraction_mode)
         except Exception as e:
             print(
                 f"[{i}/{total}] PMCID={pmcid} ⚠ visualization failed: {e}",
@@ -372,12 +344,12 @@ def main():
     """
     
     # Example 1: Run guided PDF extraction with evaluation
-    run_task_with_eval(
+    run_lang_extract_with_eval(
         model="gpt-5-mini",
         source_type="pdf",
         extraction_mode="guided",
         run_evaluation=True,
-        run_name="gpt5_mini_guided_pdf"
+        run_name=None
     )
     
     # Example 2: Run guided XML extraction with evaluation
