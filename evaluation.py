@@ -1,21 +1,46 @@
 import json
 from pathlib import Path
 from typing import Any, Dict, Tuple
-
+import unicodedata
+import re
 
 # =======================
 # Normalisation helpers
 # =======================
 
-def normalize_name(s):
+def normalize_name(s: str):
     """
-    Normalize labels like intervention/comparator/outcome/arm names.
+    Normalize arm / outcome / intervention names for matching.
+
+    - Unicode normalize (NFKC)
     - Lowercase
+    - Fix common microgram encodings: _g, µg, μg → ug
     - Collapse whitespace
     """
     if s is None:
         return None
-    return " ".join(str(s).lower().split())
+
+    # 1) Unicode normalization (handles weird composed characters)
+    s = unicodedata.normalize("NFKC", str(s))
+
+    # 2) Lowercase
+    s = s.lower()
+
+    # 3) Fix common microgram variants:
+    #    "300 _g", "300µg", "300 μg" → "300 ug"
+    s = re.sub(r'(\d+)\s*[_µμ]\s*g\b', r'\1 ug', s)
+
+    # Fallback: any stray "_g", "µg", "μg" → " ug"
+    s = re.sub(r'[_µμ]\s*g\b', ' ug', s)
+
+    # Same for "/kg" forms: "3 _g/kg", "3µg/kg" → "3 ug/kg"
+    s = re.sub(r'(\d+)\s*[_µμ]\s*g/kg\b', r'\1 ug/kg', s)
+    s = re.sub(r'[_µμ]\s*g/kg\b', ' ug/kg', s)
+
+    # 4) Collapse whitespace
+    s = " ".join(s.split())
+
+    return s
 
 
 def normalize_value(v):
@@ -390,6 +415,6 @@ def evaluate_file(extraction_file: str, gold_file: str):
 
 if __name__ == "__main__":
     # Adjust these paths to your setup
-    extraction_path = "outputs/4132222_guided_pdf.jsonl"
+    extraction_path = "outputs/gpt5_direct_pdf_guided/5773985_guided.jsonl"
     gold_path = "gold-standard/annotated_rct_dataset.json"
     evaluate_file(extraction_path, gold_path)

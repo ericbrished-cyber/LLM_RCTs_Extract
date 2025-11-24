@@ -1,0 +1,16 @@
+{
+  "run_name": "gpt5_direct_pdf_guided",
+  "num_articles": 6,
+  "total_gold_facts": 72,
+  "total_pred_facts": 117,
+  "total_tp": 42,
+  "total_fp_in_gold": 2,
+  "total_fn": 30,
+  "total_extra_predictions": 73,
+  "macro_precision": 0.75,
+  "macro_recall": 0.5833333333333334,
+  "macro_f1": 0.6388888888888888,
+  "micro_precision": 0.9545454545454546,
+  "micro_recall": 0.5833333333333334,
+  "micro_f1": 0.7241379310344828
+}

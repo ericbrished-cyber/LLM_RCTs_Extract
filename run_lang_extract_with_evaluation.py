@@ -19,7 +19,6 @@ from spinner import Spinner
 from pdf_converter import convert_pdf_to_markdown
 from XML_from_PMC import download_pmc_xml
 from batch_evaluation import BatchEvaluator
-import langextract as lx
 
 try:
     import langextract as lx
@@ -43,7 +42,7 @@ os.makedirs(pdf_folder, exist_ok=True)
 os.makedirs(markdown_folder, exist_ok=True)
 os.makedirs(xml_folder, exist_ok=True)
 os.makedirs(eval_folder, exist_ok=True)
-
+    
 
 
 def run_task_with_eval(
@@ -304,7 +303,7 @@ def run_task_with_eval(
             # find the just-written JSONL and produce the HTML visualization.
             # Pass model and extraction_mode so the visualization HTML is named
             # like: {pmcid}_{mode}_{model_family}.html (e.g. 4357072_guided_gemini.html)
-            visualize(pmcid, output_dir=output_folder, suffix=suffix, model=model, mode=extraction_mode)
+            visualize(pmcid, output_dir=run_output_folder, suffix=suffix, model=model, mode=extraction_mode)
         except Exception as e:
             print(
                 f"[{i}/{total}] PMCID={pmcid} ⚠ visualization failed: {e}",
