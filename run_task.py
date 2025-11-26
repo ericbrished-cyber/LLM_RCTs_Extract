@@ -7,7 +7,8 @@
 #Run 1: LangExtract with Gemini 2.5 Flash (guided mode)
 from run_lang_extract_with_evaluation import run_lang_extract_with_eval
 run_lang_extract_with_eval(
-    model="gemini-2.5-pro",
+    # Use a supported Gemini model; "gemini-3-pro" is not available on v1beta
+    model="gemini-2.5-flash",
     extraction_mode="guided",
     run_evaluation=True,
     run_name=None  # Auto-generates: LangExtract_gemini_2_5_flash_guided
