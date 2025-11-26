@@ -40,7 +40,7 @@ def get_icos(pmcid):
 
 
 def get_prompt_all():
-    path = Path("prompt_templates/all_prompt.md")
+    path = Path("prompt_templates/all_prompt_small.md")
     text = path.read_text(encoding="utf-8")
     return text
 

@@ -9,15 +9,16 @@ from run_lang_extract_with_evaluation import run_lang_extract_with_eval
 run_lang_extract_with_eval(
     # Use a supported Gemini model; "gemini-3-pro" is not available on v1beta
     model="gemini-2.5-flash",
-    extraction_mode="guided",
+    extraction_mode="all",
     run_evaluation=True,
     run_name=None  # Auto-generates: LangExtract_gemini_2_5_flash_guided
 )
 
 # Run 2: LangExtract with GPT-5 Mini (guided mode)
+# from run_lang_extract_with_evaluation import run_lang_extract_with_eval
 # run_lang_extract_with_eval(
 #     model="gpt-5-mini",
-#     extraction_mode="guided",
+#     extraction_mode="all",
 #     run_evaluation=True,
 #     run_name=None  # Auto-generates: LangExtract_gpt_5_mini_guided
 # )
