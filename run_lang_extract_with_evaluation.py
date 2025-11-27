@@ -70,13 +70,20 @@ def run_lang_extract_with_eval(
         # Sanitize model name for folder
         model_clean = model.replace("-", "_").replace(".", "_")
         run_name = f"LangExtract_{model_clean}_{extraction_mode}"
-    
-    # Create run-specific folders with new structure
+
+    # If a run with this name already exists, add a numeric suffix
+    base_name = run_name
+    idx = 2
+    while os.path.exists(os.path.join(base_output_folder, run_name)):
+        run_name = f"{base_name}_{idx}"
+        idx += 1
+
+    # Create run-specific folders
     run_output_folder = os.path.join(base_output_folder, run_name)
     extractions_folder = os.path.join(run_output_folder, "extractions")
     visualizations_folder = os.path.join(run_output_folder, "visualizations")
     evaluation_folder = os.path.join(run_output_folder, "evaluation")
-    
+
     os.makedirs(run_output_folder, exist_ok=True)
     os.makedirs(extractions_folder, exist_ok=True)
     os.makedirs(visualizations_folder, exist_ok=True)
@@ -190,7 +197,7 @@ def run_lang_extract_with_eval(
             "model_id": model,
             "batch_length": 20,
             "extraction_passes": 2,
-            "max_workers": 3,
+            "max_workers": 5,
         }
 
         if is_gpt:
