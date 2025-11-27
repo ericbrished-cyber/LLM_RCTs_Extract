@@ -1,63 +1,38 @@
 # Prompt
-You are extracting **numerical statistical results** from a randomized controlled trial. Return **only** JSON of the form: `{"extractions":[ ... ]}`.
+You are extracting **pairwise ICO results** from a randomized controlled trial. Return **only** JSON of the form: `{"extractions":[ ... ]}`.
 
-- Use `extraction_class` to encode *what* the number is (e.g. `intervention_mean`).
-- Use `attributes` to encode *who/what* it belongs to (`Intervention`, `Comparator`, `Outcome`, and any other disambiguating attributes such as `Timepoint` or `Population` when needed).
+Each item in "extractions" is one ICO row with EXACTLY these fields (use null for missing/not applicable):
+{
+  "id": null,
+  "evidence_inference_prompt_id": null,
+  "pmcid": "<STRING OR INTEGER>",
+  "outcome": "<STRING>",
+  "intervention": "<STRING>",
+  "comparator": "<STRING>",
+  "outcome_type": "<continuous | binary>",
+  "intervention_events": null,
+  "intervention_group_size": null,
+  "comparator_events": null,
+  "comparator_group_size": null,
+  "intervention_mean": null,
+  "intervention_standard_deviation": null,
+  "comparator_mean": null,
+  "comparator_standard_deviation": null
+}
 
-## What to annotate
+## What to extract
 You are given a list of target ICO triplets:
 
 {ico_list}
 
-Each ICO triplet is defined by `(Intervention, Comparator, Outcome)` (and optionally additional attributes like `Timepoint` or `Population`).
+Each triplet is `(Intervention, Comparator, Outcome)` (optionally with extra disambiguators like Timepoint/Population).
 
 For **each such ICO triplet, and only these**:
-- **Continuous outcomes**  
-  Extract (when reported):  
-  - `intervention_group_size`
-  - `comparator_group_size`
-  - `intervention_mean`
-  - `comparator_mean`
-  - `intervention_standard_deviation`
-  - `comparator_standard_deviation`
+- If the outcome is continuous, fill the mean/SD/group sizes when explicitly reported; leave other fields null.
+- If the outcome is binary, fill events/group sizes (and rates if explicitly reported); leave other fields null.
 
-- **Binary outcomes**
-  Extract (when reported):
-  - `intervention_group_size`
-  - `comparator_group_size`
-  - `intervention_events`
-  - `comparator_events`
-  - `intervention_rate`
-  - `comparator_rate`
-
-## Consistency & numeric rules (very important)
-
-Treat each **arm + outcome + metric** as a single table cell.
-
-An arm-context is defined as:
-
-  (Outcome) + (either Intervention or Comparator) + (any extra disambiguating attributes like Timepoint or Population)
-
-For each such arm-context and `extraction_class`, you may output **at most 1** numeric value.
-
-Examples:
-- For Outcome = "Treatment-emergent adverse events (TEAEs)" and Intervention = "desvenlafaxine",
-  you may extract at most one `intervention_group_size`, one `intervention_events`, and one `intervention_rate`.
-- For Outcome = "Mean body weight gain" and Comparator = "WA",
-  you may extract at most one `comparator_mean` and one `comparator_standard_deviation`.
-
-Do **NOT** produce two extractions with the same (Outcome, Intervention/Comparator, Timepoint/Population if relevant, `extraction_class`) but different numbers.
-
-### ICO identity
-
-You are only interested in the ICO triplets listed in `{ico_list}`.
-
-- Always set `Outcome` for every extraction.
-- For `intervention_*` classes:
-  - Always set `Intervention`.
-  - Set `Comparator` only if it is clearly identifiable in the local context (otherwise omit it).
-- For `comparator_*` classes:
-  - Always set `Comparator`.
-  - Set `Intervention` only if it is clearly identifiable in the local context (otherwise omit it).
-
-Do **NOT** extract data for interventions, comparators, or outcomes that are not given in prompt (ignoring minor wording differences like "death or MI" vs "death or myocardial infarction").
+## Rules
+- One JSON object per ICO triplet with at least one reported numeric value; omit triplets with no reported values.
+- Use plain numbers (no percent signs, no units).
+- Do not invent or derive numbers; use only what is explicitly stated in Abstract/Results.
+- Output raw JSON only (no markdown fencing, no extra text).
