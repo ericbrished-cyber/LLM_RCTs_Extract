@@ -2,6 +2,7 @@ import time
 import os
 from pathlib import Path
 from datetime import datetime
+import pandas as pd
 
 from utils import (
     get_fulltext, 
@@ -16,6 +17,7 @@ from utils import (
 from spinner import Spinner
 from pdf_converter import convert_pdf_to_markdown
 from batch_evaluation import BatchEvaluator
+from export_extractions_to_excel import load_extractions, COLUMNS
 
 try:
     import langextract as lx
@@ -186,7 +188,7 @@ def run_lang_extract_with_eval(
         label = f"[{i}/{total}] PMCID={pmcid} ({mode_label}) extracting…"
 
         is_gpt = model.startswith("gpt")
-        is_gemini = model.startswith("gemini")
+        #not needen since "else" #is_gemini = model.startswith("gemini") 
 
         extract_kwargs = {
             "text_or_documents": input_text,
@@ -313,6 +315,8 @@ def run_lang_extract_with_eval(
     
     print("=" * 80)
 
+    eval_results = None
+
     # ===== Run evaluation if requested =====
     if run_evaluation and stats["successful"] > 0:
         print("\n" + "=" * 80)
@@ -325,23 +329,32 @@ def run_lang_extract_with_eval(
                 output_dir=evaluation_folder
             )
             
-            results = evaluator.evaluate_directory(
+            eval_results = evaluator.evaluate_directory(
                 predictions_dir=extractions_folder,  # Point to extractions subfolder
                 suffix_filter=suffix,
                 run_name=run_name
             )
             
-            return results
-            
         except Exception as e:
             print(f"✗ Evaluation failed: {e}")
-            return None
     
     elif run_evaluation and stats["successful"] == 0:
         print("\n⚠ Skipping evaluation - no successful extractions")
-        return None
     
-    return None
+    # ===== Export Excel for this run =====
+    try:
+        rows = load_extractions(Path(extractions_folder), suffix=suffix)
+        if rows:
+            df = pd.DataFrame(rows, columns=COLUMNS)
+            excel_path = Path(run_output_folder) / f"{run_name}.xlsx"
+            df.to_excel(excel_path, index=False)
+            print(f"\n✓ Excel export saved to: {excel_path}")
+        else:
+            print("\n⚠ No rows to export to Excel (check suffix/filter).")
+    except Exception as e:
+        print(f"\n⚠ Excel export failed: {e}")
+
+    return eval_results
 
 
 def main():
