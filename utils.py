@@ -225,6 +225,3 @@ def get_pmcid_from_filename(path: str) -> int:
     if not digits:
         raise ValueError(f"No digits (pmcid) in filename: {name}")
     return int(digits)
-
-def get_events_from_rate():
-    

@@ -1,0 +1,16 @@
+{
+  "run_name": "LangExtract_gpt_5_mini_guided_2",
+  "num_articles": 1,
+  "total_gold_facts": 52,
+  "total_pred_facts": 99,
+  "total_tp": 22,
+  "total_fp_in_gold": 16,
+  "total_fn": 30,
+  "total_extra_predictions": 20,
+  "macro_precision": 0.5789473684210527,
+  "macro_recall": 0.4230769230769231,
+  "macro_f1": 0.4888888888888889,
+  "micro_precision": 0.5789473684210527,
+  "micro_recall": 0.4230769230769231,
+  "micro_f1": 0.4888888888888889
+}
