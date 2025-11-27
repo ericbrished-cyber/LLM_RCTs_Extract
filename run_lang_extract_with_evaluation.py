@@ -30,7 +30,7 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 # Directory setup
-pdf_folder = "data/PDF_test"
+pdf_folder = "data/PDF_excel_test"
 markdown_folder = "data/Markdown"
 base_output_folder = "./outputs"
 
@@ -196,8 +196,8 @@ def run_lang_extract_with_eval(
             "examples": examples,
             "model_id": model,
             "batch_length": 20,
-            "extraction_passes": 2,
-            "max_workers": 5,
+            "extraction_passes": 5,
+            "max_workers": 10,
         }
 
         if is_gpt:
