@@ -39,7 +39,7 @@ os.makedirs(markdown_folder, exist_ok=True)
 
 def run_lang_extract_with_eval(
     model="gemini-2.5-flash",
-    extraction_mode="all",  # "all" or "guided"
+    extraction_mode="guided",  # "all" or "guided"
     run_evaluation=True,
     run_name=None,
 ):
@@ -195,7 +195,7 @@ def run_lang_extract_with_eval(
             "model_id": model,
             "batch_length": 20,
             "extraction_passes": 2,
-            "max_workers": 20,
+            "max_workers": 5,
         }
 
         if is_gpt:

@@ -5,8 +5,9 @@ from pathlib import Path
 import re
 import langextract as lx
 import glob
-from typing import Any, Dict, Tuple
-import re
+#from typing import Any, Dict, Tuple
+#not used
+
 
 
 
@@ -39,7 +40,7 @@ def get_icos(pmcid):
 
 
 def get_prompt_all():
-    path = Path("prompt_templates/all_prompt.md")
+    path = Path("prompt_templates/all_prompt_small.md")
     text = path.read_text(encoding="utf-8")
     return text
 
@@ -111,7 +112,7 @@ def get_fewshotexamples(few_shots_folder="few-shots"):
 
     return examples
 
-
+#anv'nds, är vi säkra på att den används, hittar ej var /eric
 def simplified_entry(entry):
     simplified_entry = {
         "id": entry["id"],
@@ -225,3 +226,26 @@ def get_pmcid_from_filename(path: str) -> int:
     if not digits:
         raise ValueError(f"No digits (pmcid) in filename: {name}")
     return int(digits)
+
+
+def get_events_from_rate(event_rate, n):
+    """
+    Estimate number of events from an event rate and sample size.
+
+    Args:
+        event_rate (float|int|str): event rate as proportion (0-1) or percentage (0-100).
+        n (int): sample size.
+
+    Returns:
+        int: estimated number of events (rounded), or None if inputs are invalid.
+    """
+    if event_rate is None or n is None:
+        return None
+    try:
+        rate = float(event_rate)
+    except (TypeError, ValueError):
+        raise ValueError(f"Invalid event_rate: {event_rate}")
+    # treat values > 1 as percentages (e.g., 25 -> 0.25)
+    if rate > 1:
+        rate = rate / 100.0
+    return int(round(rate * int(n)))
