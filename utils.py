@@ -39,8 +39,11 @@ def get_icos(pmcid):
     return result
 
 
-def get_prompt_all():
-    path = Path("prompt_templates/all_prompt.md")
+def get_prompt_all(prompt_path="prompt_templates/all_prompt_new.md"):
+    """
+    Load the base (non-guided) prompt from a file.
+    """
+    path = Path(prompt_path)
     text = path.read_text(encoding="utf-8")
     return text
 
@@ -74,15 +77,11 @@ def _build_char_interval(item):
         end_pos=ci["end_pos"],
     )
 
-def get_fewshotexamples(few_shots_folder="few-shots"):
+def get_fewshotexamples(few_shots_path="few-shots/new_examples.yaml"):
     """
     Load few-shot examples from a YAML file and convert them to LangExtract ExampleData.
-
-    If `xml` is True, loads `examples_XML.yaml`, otherwise `examples.yaml`.
     """
-    few_shots_folder = Path(few_shots_folder)
-    yaml_filename = "examples.yaml"
-    yaml_file = few_shots_folder / yaml_filename
+    yaml_file = Path(few_shots_path)
 
     with yaml_file.open("r", encoding="utf-8") as f:
         data = yaml.safe_load(f) or {}
@@ -124,7 +123,7 @@ def simplified_entry(entry):
     }
     return simplified_entry
 
-def get_prompt_guided(pmcid, gpt5_direct=False):
+def get_prompt_guided(pmcid, gpt5_direct=False, template_path=None):
     """
     Generate a prompt with specific ICOs to extract for a given PMCID.
     Uses the existing get_icos() function to retrieve annotations.
@@ -152,13 +151,15 @@ def get_prompt_guided(pmcid, gpt5_direct=False):
     icos_text = "\n\n".join(icos_list)
     
     # Load template and substitute ICOs
-    if gpt5_direct:
-        template_path = Path("prompt_templates/guided_prompt_GPT5_direct.md")
+    if template_path:
+        template_file = Path(template_path)
+    elif gpt5_direct:
+        template_file = Path("prompt_templates/guided_prompt_GPT5_direct.md")
     else:
-        template_path = Path("prompt_templates/guided_prompt.md")
+        template_file = Path("prompt_templates/guided_prompt.md")
         
-    if template_path.exists():
-        template = template_path.read_text(encoding="utf-8")
+    if template_file.exists():
+        template = template_file.read_text(encoding="utf-8")
         prompt = template.replace("{ico_list}", icos_text)
         return prompt
     else:

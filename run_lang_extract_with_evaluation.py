@@ -29,21 +29,17 @@ from dotenv import load_dotenv, find_dotenv
 # Load .env early
 load_dotenv(find_dotenv())
 
-# Directory setup
-pdf_folder = "data/PDF_excel_test"
-markdown_folder = "data/Markdown"
-base_output_folder = "./outputs"
-
-os.makedirs(base_output_folder, exist_ok=True)
-os.makedirs(pdf_folder, exist_ok=True)
-os.makedirs(markdown_folder, exist_ok=True)
-    
-
 def run_lang_extract_with_eval(
     model="gemini-2.5-flash",
-    extraction_mode="guided",  # "all" or "guided"
+    extraction_mode="all",  # "all" or "guided"
     run_evaluation=True,
     run_name=None,
+    pdf_folder="data/PDF_excel_test",
+    markdown_folder="data/Markdown",
+    base_output_folder="./outputs",
+    few_shots_path="few-shots/new_examples.yaml",
+    prompt_all_path="prompt_templates/all_prompt_new.md",
+    guided_prompt_template="prompt_templates/guided_prompt.md",
 ):
     """
     Run extraction task on PMC articles with optional batch evaluation.
@@ -55,7 +51,17 @@ def run_lang_extract_with_eval(
             - "guided": Extract specific ICOs given in annotations
         run_evaluation (bool): Whether to run evaluation after extraction
         run_name (str): Name for this run (used in evaluation results)
+        pdf_folder (str): Folder containing the PDFs to process
+        markdown_folder (str): Folder where Markdown conversions are stored
+        base_output_folder (str): Root output folder for the run
+        few_shots_path (str): Path to the YAML file with few-shot examples
+        prompt_all_path (str): Path to the prompt used for unguided runs
+        guided_prompt_template (str): Template used for guided runs
     """
+    os.makedirs(base_output_folder, exist_ok=True)
+    os.makedirs(pdf_folder, exist_ok=True)
+    os.makedirs(markdown_folder, exist_ok=True)
+
     pmcid_lst = list_pmcids(pdf_folder)
     total = len(pmcid_lst)
     
@@ -161,8 +167,8 @@ def run_lang_extract_with_eval(
 
         # ===== STEP 2: Prepare prompt and examples =====
         if extraction_mode == "all":
-            prompt = get_prompt_all()
-            examples = get_fewshotexamples()
+            prompt = get_prompt_all(prompt_all_path)
+            examples = get_fewshotexamples(few_shots_path)
             mode_label = "all stats"
 
         elif extraction_mode == "guided":
@@ -174,9 +180,8 @@ def run_lang_extract_with_eval(
                 )
                 stats["skipped"] += 1
                 continue
-            
-            prompt = get_prompt_guided(pmcid)
-            examples = get_fewshotexamples()
+            prompt = get_prompt_guided(pmcid, template_path=guided_prompt_template)
+            examples = get_fewshotexamples(few_shots_path)
             mode_label = f"guided ({len(icos)} ICOs)"
 
         else:
@@ -196,7 +201,7 @@ def run_lang_extract_with_eval(
             "examples": examples,
             "model_id": model,
             "batch_length": 20,
-            "extraction_passes": 5,
+            "extraction_passes": 3,
             "max_workers": 10,
         }
 

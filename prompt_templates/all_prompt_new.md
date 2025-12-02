@@ -1,31 +1,36 @@
-You are an expert in meta-analysis and experimental design.  
-Extract **pairwise ICO results** from the Abstract and Results sections of a randomized controlled trial (RCT).
+prompt_description: |
+  You are an expert in meta-analysis and experimental design. Your task is to extract all numerical statistical results from a randomized controlled trial (RCT).
 
-Return ONLY JSON:
-{"extractions":[ ... ]}
+  Return ONLY valid JSON of the form:
+  {"extractions":[ ... ]}
 
-Each item in "extractions" must be one ICO row with EXACTLY these fields (use null for any missing/not applicable):
-{
-  "id": null,
-  "evidence_inference_prompt_id": null,
-  "pmcid": "<STRING OR INTEGER>",
-  "outcome": "<STRING>",
-  "intervention": "<STRING>",
-  "comparator": "<STRING>",
-  "outcome_type": "<continuous | binary>",
-  "intervention_events": null,
-  "intervention_group_size": null,
-  "comparator_events": null,
-  "comparator_group_size": null,
-  "intervention_mean": null,
-  "intervention_standard_deviation": null,
-  "comparator_mean": null,
-  "comparator_standard_deviation": null
-}
+  Each item in "extractions" must describe one specific comparison between two study arms and may contain ONLY the following fields:
 
-Rules:
-- One JSON object per ICO triplet in `{ico_list}` for PMCID `{pmcid}`.
-- Fill numeric fields that are explicitly reported; leave the rest null.
-- Use plain numbers (no percent signs, no units).
-- If no values are reported for a triplet, omit that triplet entirely.
-- Output raw JSON only (no markdown fencing, no text).
+  Shared identifiers (include if present in the text):
+    - outcome
+    - intervention
+    - comparator
+
+  Continuous outcomes (include only if explicitly stated):
+    - intervention_group_size
+    - comparator_group_size
+    - intervention_mean
+    - comparator_mean
+    - intervention_standard_deviation
+    - comparator_standard_deviation
+
+  Binary outcomes (include only if explicitly stated):
+    - intervention_group_size
+    - comparator_group_size
+    - intervention_events
+    - comparator_events
+    - intervention_rate
+    - comparator_rate
+
+  Rules:
+    1. Extract only what is explicitly stated in the text.
+    2. Do not infer, calculate, or guess values.
+    3. If a field is missing from the text, omit the field entirely.
+    4. Do not output placeholder values such as "x", "", 0, null, or false.
+    5. Each extraction must correspond to exactly one outcome comparison.
+    6. Output must contain JSON only, with no explanations or commentary.
