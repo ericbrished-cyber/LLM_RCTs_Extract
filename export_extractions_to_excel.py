@@ -12,14 +12,14 @@ from utils import get_pmcid_from_filename
 CLASS_TO_COLUMN = {
     "intervention_group_size": "intervention_group_size",
     "comparator_group_size": "comparator_group_size",
-    "intervention_events": "intervention_events",
-    "comparator_events": "comparator_events",
-    "intervention_rate": "intervention_rate",
-    "comparator_rate": "comparator_rate",
-    "intervention_mean": "intervention_mean",
-    "comparator_mean": "comparator_mean",
-    "intervention_standard_deviation": "intervention_standard_deviation",
-    "comparator_standard_deviation": "comparator_standard_deviation",
+    #"intervention_events": "intervention_events",
+    #"comparator_events": "comparator_events",
+    #"intervention_rate": "intervention_rate",
+    #"comparator_rate": "comparator_rate",
+    #"intervention_mean": "intervention_mean",
+    #"comparator_mean": "comparator_mean",
+   # "intervention_standard_deviation": "intervention_standard_deviation",
+  #  "comparator_standard_deviation": "comparator_standard_deviation",
 }
 
 # Column order for the Excel sheet
@@ -30,15 +30,15 @@ COLUMNS = [
     "outcome",
     "intervention_group_size",
     "comparator_group_size",
-    "intervention_events",
-    "comparator_events",
-    "intervention_rate",
-    "comparator_rate",
-    "intervention_mean",
-    "comparator_mean",
-    "intervention_standard_deviation",
-    "comparator_standard_deviation",
-    "source_file",
+    #"intervention_events",
+    #"comparator_events",
+    #"intervention_rate",
+    #"comparator_rate",
+    #"intervention_mean",
+    #"comparator_mean",
+   # "intervention_standard_deviation",
+  #  "comparator_standard_deviation",
+ #   "source_file",
 ]
 
 
